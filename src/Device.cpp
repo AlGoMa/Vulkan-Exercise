@@ -34,7 +34,7 @@ VkResult Device::CreateLogicalDevice(const std::vector<const char*> in_vDevExten
     stCreateInfo.ppEnabledExtensionNames = in_vDevExtensions.data();
 
 #ifdef NDEBUG
-    createInfo.enabledLayerCount = 0;
+    stCreateInfo.enabledLayerCount = 0;
 #else
     stCreateInfo.enabledLayerCount = static_cast<uint32_t>(in_vValidationLayers.size());
     stCreateInfo.ppEnabledLayerNames = in_vValidationLayers.data();
