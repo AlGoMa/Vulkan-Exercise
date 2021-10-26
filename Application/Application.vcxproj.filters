@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{eb4765dd-5d90-4c4b-a17d-b62c10d47e79}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{852fe9a1-7373-423b-8300-0feafcd8984a}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes\Singleton.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\App_Types.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Application.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\BaseManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\FSM.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Matrix.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Quaternion.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\GeometryMesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Buffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FSM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Matrix.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Quaternion.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GeometryMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Buffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

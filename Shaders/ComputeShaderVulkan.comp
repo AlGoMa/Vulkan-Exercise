@@ -1,0 +1,38 @@
+#version 450
+
+layout (local_size_x = 5) in;
+
+
+layout(set = 0, binding = 0) readonly buffer  InputBuffer{
+    vec4 colors[ ];
+} sourceData;
+
+layout(set = 0, binding = 1) buffer  OutputBuffer{
+    vec4 colors[ ];
+} outputData;
+
+
+vec4 normalizeColor(vec4 in_color)
+{
+    return vec4(in_color.r / 255.0, in_color.g / 255.0, in_color.b / 255.0, in_color.a / 255.0 );
+}
+
+vec4 NewColor (vec4 x0, vec4 x1, vec4 x2, float in_MouseYpos)
+{
+    return normalizeColor ( 
+        (in_MouseYpos < 0.5f) ? ((x1 * in_MouseYpos * 2.0f) + x0 * (0.5f - in_MouseYpos) * 2.0f) : (x2 * (in_MouseYpos - 0.5f) * 2.0 + x1 * (1.0f - in_MouseYpos) * 2.0f)
+    );
+}
+
+
+void main()
+{
+    //grab global ID
+	uint gID = gl_GlobalInvocationID.x;
+
+     outputData.colors[gID] = NewColor ( 
+     sourceData.colors[gID * 3], 
+     sourceData.colors[gID * 3 + 1], 
+     sourceData.colors[gID * 3 + 2], 
+     1.0);
+}
