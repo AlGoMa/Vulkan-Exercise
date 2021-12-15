@@ -178,7 +178,7 @@ VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const Entity* in
 {
     vkWaitForFences(m_Device.GetDevice(), 1, &m_vInFlightFences[m_unFrame], VK_TRUE, UINT64_MAX);
 
-    uint32_t unImageIndex;
+    uint32_t unImageIndex = 0U;
     VkResult eResult = vkAcquireNextImageKHR(m_Device.GetDevice(), m_SwapChain.GetSwapChain(), UINT64_MAX, m_vImageAvailableSemaphores[m_unFrame], VK_NULL_HANDLE, &unImageIndex);
 
     if ((VK_SUBOPTIMAL_KHR == eResult) || (VK_SUCCESS == eResult)) {

@@ -73,8 +73,8 @@ void  VulkanWindow::vDeInitialization(void)
 
 void  VulkanWindow::Draw(void)
 {
-    Instance->vkDraw(m_pInstance, m_pEntity.get(), 
-                                         EventState::active == GetEventStateAndReset(static_cast<uint64_t>(Events::Resize)));
+    Instance->vkDraw(m_pInstance, m_pEntity.get(),
+                     EventState::active == GetEventStateAndReset(static_cast<uint64_t>(Events::Resize)));
 }
 
 void  VulkanWindow::LoadContent(void)

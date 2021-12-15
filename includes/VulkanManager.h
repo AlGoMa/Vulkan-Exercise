@@ -11,9 +11,9 @@
 #define Instance VulkanManager::GetInstance()
 
 #ifdef NDEBUG
-const bool g_bEnableValidationLayers = false;
+constexpr bool g_bEnableValidationLayers = false;
 #else
-const bool g_bEnableValidationLayers = true;
+constexpr bool g_bEnableValidationLayers = true;
 #endif
 
 class VulkanManager :
@@ -21,7 +21,8 @@ class VulkanManager :
 {
 protected:
     VulkanManager(void) : m_pVulkanApp(nullptr),
-                          m_pDebugMessenger(VK_NULL_HANDLE)
+                          m_pDebugMessenger(VK_NULL_HANDLE),
+                          m_unFrame(0U)
     {}
 
     ~VulkanManager(void) = default;
@@ -35,10 +36,9 @@ public:
     inline       SwapChain*   GetSC       (void)                          { return &m_SwapChain; }
     inline       Device*      GetDevice   (void)                          { return &m_Device; }
     inline       Pipeline*    GetPipeline (void)                          { return &m_Pipeline; }
-    inline void               StopDevice  (void)                          { vkDeviceWaitIdle(m_Device.GetDevice()); }
+    inline void               StopDevice  (void)                          { (void)vkDeviceWaitIdle(m_Device.GetDevice()); }
     
 private:
-
     VkResult CreateDebugUtilsMsn(const VkAllocationCallbacks* pAllocator);
 
     VkResult DestroyDebugUtilsMsn(const VkAllocationCallbacks* pAllocator);
@@ -52,9 +52,9 @@ private:
     const std::vector<const char*> GetExtensions(void);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
-        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-        void* pUserData);
+                                                        VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                                        void* pUserData);
 
     friend class Singleton<VulkanManager>;
 
