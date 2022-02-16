@@ -23,7 +23,7 @@ bool StorageBuffer::CreateDescriptor(void)
     layoutInfo.bindingCount = aUboLayoutBinding.size();
     layoutInfo.pBindings = aUboLayoutBinding.data();
 
-    if (vkCreateDescriptorSetLayout(Instance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_ComputerSetLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_ComputerSetLayout) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create compute descriptor set layout!");
     }
@@ -48,18 +48,18 @@ bool StorageBuffer::CreateBuffer(const void* in_pData, const uint32_t in_unSize)
 
 void StorageBuffer::UpdateBuffer(const uint32_t in_unFrame)
 {
-    //vkMapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Storage"][in_unFrame].m_BufferMem, 0, VK_WHOLE_SIZE, 0, positions);
+    //vkMapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Storage"][in_unFrame].m_BufferMem, 0, VK_WHOLE_SIZE, 0, positions);
 
-    //vkUnmapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Storage"][in_unFrame].m_BufferMem);
+    //vkUnmapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Storage"][in_unFrame].m_BufferMem);
 }
 
 void StorageBuffer::Destroy(void)
 {
-    vkDestroyDescriptorSetLayout(Instance->GetDevice()->GetDevice(), m_ComputerSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), m_ComputerSetLayout, nullptr);
     
     for (auto& buffer : m_mBufferContainer["Storage"])
     {
-        vkDestroyBuffer(Instance->GetDevice()->GetDevice(), buffer.m_Buffer, nullptr);
-        vkFreeMemory(Instance->GetDevice()->GetDevice(), buffer.m_BufferMem, nullptr);
+        vkDestroyBuffer(VulkanInstance->GetDevice()->GetDevice(), buffer.m_Buffer, nullptr);
+        vkFreeMemory(VulkanInstance->GetDevice()->GetDevice(), buffer.m_BufferMem, nullptr);
     }
 }

@@ -6,12 +6,13 @@
 namespace App::SingletonPattern
 {
     template <class TClass>
+    requires std::is_class<TClass>::value
     class Singleton : 
-        public App::Resources::IResource<Singleton<TClass>>
+        public Common::Resources::IResource<Singleton<TClass>>
     {
     protected:
-        Singleton   (void) {}
-        ~Singleton  (void) {}
+        Singleton  (void) = default;
+        virtual ~Singleton (void) = default;
 
     public:
         static TClass*  GetInstance (void) { return nullptr == sm_pInstance ? sm_pInstance = new TClass() : sm_pInstance; }
@@ -22,5 +23,6 @@ namespace App::SingletonPattern
     };
 
     template <class TClass>
+    requires std::is_class<TClass>::value
     TClass* Singleton<TClass>::sm_pInstance(nullptr);
 }

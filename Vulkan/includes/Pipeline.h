@@ -6,7 +6,7 @@
 #include <Entity.h>
 
 class Pipeline final : 
-    public App::Resources::IResource<Pipeline>
+    public Common::Resources::IResource<Pipeline>
 {
 public:
     Pipeline (void) : m_pRenderPass(VK_NULL_HANDLE) {
@@ -20,8 +20,8 @@ public:
 
     struct PipelineData
     {
-        VkPipelineLayout                             m_ppLayout;
-        VkPipeline                                   m_pp;
+        VkPipelineLayout  m_ppLayout;
+        VkPipeline        m_pp;
     };
 
     VkResult CreateGraphicsPipeline      (void);

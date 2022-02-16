@@ -12,7 +12,7 @@ Application::Application(const char* in_pszAppName,
     long in_lWidth,
     long in_lHeight,
     bool in_bFullScreen,
-    bool in_bResizable) : m_pInstance(nullptr), m_pParent(nullptr), Resources::IResource<Application>(in_pszAppName)
+    bool in_bResizable) : m_pInstance(nullptr), m_pParent(nullptr), Common::Resources::IResource<Application>(in_pszAppName)
 {
     m_stAttributes.mAppName = in_pszAppName;
     m_stAttributes.mAttributes.m_stSize.m_lPosX = in_lPosX;

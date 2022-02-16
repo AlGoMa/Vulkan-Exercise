@@ -1,7 +1,6 @@
 #pragma once
 #include <Resource.h>
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 #include <vulkan/vulkan.h>
 #include "Device.h"
 #include <vector>
@@ -9,7 +8,7 @@
 #include "StorageBuffer.h"
 
 class SwapChain :
-    public App::Resources::IResource<SwapChain>
+    public Common::Resources::IResource<SwapChain>
 {
 public:
     SwapChain(void) { m_pConstantBuffer = std::make_unique<ConstantBuffer>();  m_pStorageBuffer = std::make_unique<StorageBuffer>();
@@ -39,6 +38,9 @@ public:
     inline const VkSwapchainKHR   GetSwapChain   (void) const { return m_pSwapChain; }
     inline const VkExtent2D       GetExtents     (void) const { return m_vSwapChainExtent; }
     inline const VkFormat         GetFormats     (void) const { return m_vSwapChainImageFormat; }
+    inline const VkColorSpaceKHR  GetColorSpace  (void) const { return m_vSwapChainColorSpace; }
+    inline const VkPresentModeKHR GetPresentMode (void) const { return m_vSwapChainPresentMode; }
+    inline const VkDescriptorPool GetDescriptor  (void) const { return m_DescriptorPool; }
     inline const auto&            GetFramebuffer (void) const { return m_vSwapChainFramebuffers; }
     inline const auto&            GetViews       (void) const { return m_vSwapChainImageViews; }
     inline const auto&            GetSCImages    (void) const { return m_vSwapChainImages; }
@@ -62,7 +64,9 @@ private:
     VkSurfaceKHR                       m_pSurface;
     VkSwapchainKHR                     m_pSwapChain;
     std::vector<VkImage>               m_vSwapChainImages;
+    VkPresentModeKHR                   m_vSwapChainPresentMode;
     VkFormat                           m_vSwapChainImageFormat;
+    VkColorSpaceKHR                    m_vSwapChainColorSpace;
     VkExtent2D                         m_vSwapChainExtent;
     VkDescriptorPool                   m_DescriptorPool;
     std::vector<VkDescriptorSet>       m_vDescriptorSets;

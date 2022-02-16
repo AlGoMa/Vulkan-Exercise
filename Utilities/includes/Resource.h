@@ -5,17 +5,17 @@
 #include <regex>
 #include <typeinfo>
 
-namespace App
+namespace Common
 {
     namespace Resources
     {
         static std::string ClassName(const char* in_pszName)
         {
-            std::smatch t_matches;
+            std::smatch out_matches;
             std::string strInput(in_pszName);
-            std::regex_search(strInput, t_matches, std::regex("(?!.*::)(?!=[\\s]?)([\\w]+)"));
-            
-            return t_matches[1];
+            std::regex_search(strInput, out_matches, std::regex("(?!.*::)(?!=[\\s]?)([\\w]+)"));
+
+            return out_matches[1];
         }
 
         template <class TClass>
@@ -24,12 +24,12 @@ namespace App
         protected:
             typedef struct RESOURCEDATA
             {
-                t_IntU64     m_ulHashID;
+                t_IntU64     m_ulHashID = 0;
                 std::string  m_strRscName;
             } stResourceID;
 
             IResource(void) 
-            { 
+            {
                 m_stResourceIn = stResourceID{ std::hash<std::string>()(typeid(IResource).name()), ClassName(typeid(this).name()) };
             }
 

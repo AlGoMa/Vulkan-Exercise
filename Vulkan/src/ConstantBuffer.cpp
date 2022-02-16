@@ -23,7 +23,7 @@ bool ConstantBuffer::CreateDescriptor(void)
     layoutInfo.bindingCount = aUboLayoutBinding.size();
     layoutInfo.pBindings = aUboLayoutBinding.data();
 
-    if (vkCreateDescriptorSetLayout(Instance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
@@ -37,17 +37,17 @@ bool ConstantBuffer::CreateBuffer(const void* in_pData, const uint32_t in_unSize
 
     VkDeviceSize bufferSize = sizeof(UniformData);
 
-    m_mBufferContainer["Uniform"].resize(Instance->GetSC()->GetSCImages().size());
-    m_mBufferContainer["Scene"].resize(Instance->GetSC()->GetSCImages().size());
+    m_mBufferContainer["Uniform"].resize(VulkanInstance->GetSC()->GetSCImages().size());
+    m_mBufferContainer["Scene"].resize(VulkanInstance->GetSC()->GetSCImages().size());
     
     for ( auto& Buffers : m_mBufferContainer["Uniform"])
     {
         bResult |= __super::CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_SHARING_MODE_EXCLUSIVE, Buffers);
     }
     
-    VkDeviceSize limits = Instance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
+    VkDeviceSize limits = VulkanInstance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
 
-    bufferSize = ((sizeof(SceneData) + limits - 1) & ~(limits - 1)) * Instance->GetSC()->GetSCImages().size();
+    bufferSize = ((sizeof(SceneData) + limits - 1) & ~(limits - 1)) * VulkanInstance->GetSC()->GetSCImages().size();
 
     for (auto& Buffers : m_mBufferContainer["Scene"])
     {
@@ -60,33 +60,33 @@ bool ConstantBuffer::CreateBuffer(const void* in_pData, const uint32_t in_unSize
 void ConstantBuffer::UpdateBuffer(const uint32_t in_unFrame)
 {
     void* data;
-    vkMapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][in_unFrame].m_BufferMem, 0, sizeof(UniformData), 0, &data);
+    vkMapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][in_unFrame].m_BufferMem, 0, sizeof(UniformData), 0, &data);
     memcpy(data, &m_tUniformData, sizeof(UniformData));
-    vkUnmapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][in_unFrame].m_BufferMem);
+    vkUnmapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][in_unFrame].m_BufferMem);
 
-    VkDeviceSize limits = Instance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
+    VkDeviceSize limits = VulkanInstance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment; 
 
     VkDeviceSize bufferSize = ((sizeof(SceneData) + limits - 1) & ~(limits - 1)) * in_unFrame;
 
     char* dataScene;
-    vkMapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][in_unFrame].m_BufferMem, 0, sizeof(SceneData), 0, (void**)&dataScene);
+    vkMapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][in_unFrame].m_BufferMem, 0, sizeof(SceneData), 0, (void**)&dataScene);
     memcpy(dataScene, &m_tSceneData, sizeof(SceneData));
-    vkUnmapMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][in_unFrame].m_BufferMem);
+    vkUnmapMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][in_unFrame].m_BufferMem);
 }
 
 void ConstantBuffer::Destroy(void)
 {
-    vkDestroyDescriptorSetLayout(Instance->GetDevice()->GetDevice(), m_DescriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), m_DescriptorSetLayout, nullptr);
 }
 
 void ConstantBuffer::DestroyBuffer(void)
 {
-    for (size_t i = 0; i < Instance->GetSC()->GetSCImages().size(); i++)
+    for (size_t i = 0; i < VulkanInstance->GetSC()->GetSCImages().size(); i++)
     {
-        vkDestroyBuffer(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][i].m_Buffer, nullptr);
-        vkFreeMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][i].m_BufferMem, nullptr);
+        vkDestroyBuffer(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][i].m_Buffer, nullptr);
+        vkFreeMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Uniform"][i].m_BufferMem, nullptr);
 
-        vkDestroyBuffer(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][i].m_Buffer, nullptr);
-        vkFreeMemory(Instance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][i].m_BufferMem, nullptr);
+        vkDestroyBuffer(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][i].m_Buffer, nullptr);
+        vkFreeMemory(VulkanInstance->GetDevice()->GetDevice(), m_mBufferContainer["Scene"][i].m_BufferMem, nullptr);
     }
 }

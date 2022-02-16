@@ -5,7 +5,7 @@
 uint32_t VulkanBuffer::FindMemoryType(uint32_t in_unTypeFilter, VkMemoryPropertyFlags in_unProperties)
 {
     VkPhysicalDeviceMemoryProperties stMemProperties;
-    vkGetPhysicalDeviceMemoryProperties(Instance->GetDevice()->GetPhysicalDevice(), &stMemProperties);
+    vkGetPhysicalDeviceMemoryProperties(VulkanInstance->GetDevice()->GetPhysicalDevice(), &stMemProperties);
 
     for (uint32_t _ = 0; _ < stMemProperties.memoryTypeCount; _++)
     {
@@ -23,11 +23,11 @@ void VulkanBuffer::CopyBuffer(VkBuffer in_unSrcBuffer, VkBuffer in_unDstBuffer, 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = Instance->GetDevice()->GetCommandPool();
+    allocInfo.commandPool = VulkanInstance->GetDevice()->GetCommandPool();
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer pstCommandBuffer;
-    vkAllocateCommandBuffers(Instance->GetDevice()->GetDevice(), &allocInfo, &pstCommandBuffer);
+    vkAllocateCommandBuffers(VulkanInstance->GetDevice()->GetDevice(), &allocInfo, &pstCommandBuffer);
 
     VkCommandBufferBeginInfo stBeginInfo{};
     stBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -46,10 +46,10 @@ void VulkanBuffer::CopyBuffer(VkBuffer in_unSrcBuffer, VkBuffer in_unDstBuffer, 
     stSubmitInfo.commandBufferCount = 1;
     stSubmitInfo.pCommandBuffers = &pstCommandBuffer;
 
-    vkQueueSubmit(Instance->GetDevice()->GetGfxQueue(), 1, &stSubmitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(Instance->GetDevice()->GetGfxQueue());
+    vkQueueSubmit(VulkanInstance->GetDevice()->GetGfxQueue(), 1, &stSubmitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(VulkanInstance->GetDevice()->GetGfxQueue());
 
-    vkFreeCommandBuffers(Instance->GetDevice()->GetDevice(), Instance->GetDevice()->GetCommandPool(), 1, &pstCommandBuffer);
+    vkFreeCommandBuffers(VulkanInstance->GetDevice()->GetDevice(), VulkanInstance->GetDevice()->GetCommandPool(), 1, &pstCommandBuffer);
 }
 
 bool VulkanBuffer::CreateBuffer(VkDeviceSize          in_unSize,
@@ -66,25 +66,25 @@ bool VulkanBuffer::CreateBuffer(VkDeviceSize          in_unSize,
     stBufferInfo.usage = in_unUsage;
     stBufferInfo.sharingMode = in_eSharingmode;
 
-    if (VK_SUCCESS != vkCreateBuffer(Instance->GetDevice()->GetDevice(), &stBufferInfo, nullptr, &in_stBuffer.m_Buffer))
+    if (VK_SUCCESS != vkCreateBuffer(VulkanInstance->GetDevice()->GetDevice(), &stBufferInfo, nullptr, &in_stBuffer.m_Buffer))
     {
         throw std::runtime_error("failed to create buffer!");
     }
 
     VkMemoryRequirements stMemReqs;
-    vkGetBufferMemoryRequirements(Instance->GetDevice()->GetDevice(), in_stBuffer.m_Buffer, &stMemReqs);
+    vkGetBufferMemoryRequirements(VulkanInstance->GetDevice()->GetDevice(), in_stBuffer.m_Buffer, &stMemReqs);
 
     VkMemoryAllocateInfo stAllocInfo{};
     stAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     stAllocInfo.allocationSize = stMemReqs.size;
     stAllocInfo.memoryTypeIndex = FindMemoryType(stMemReqs.memoryTypeBits, in_unProperties);
 
-    if (bReturn = (VK_SUCCESS != vkAllocateMemory(Instance->GetDevice()->GetDevice(), &stAllocInfo, nullptr, &in_stBuffer.m_BufferMem)))
+    if (bReturn = (VK_SUCCESS != vkAllocateMemory(VulkanInstance->GetDevice()->GetDevice(), &stAllocInfo, nullptr, &in_stBuffer.m_BufferMem)))
     {
         throw std::runtime_error("failed to allocate buffer memory!");
     }
 
-    return !bReturn && (!vkBindBufferMemory(Instance->GetDevice()->GetDevice(), in_stBuffer.m_Buffer, in_stBuffer.m_BufferMem, 0));
+    return !bReturn && (!vkBindBufferMemory(VulkanInstance->GetDevice()->GetDevice(), in_stBuffer.m_Buffer, in_stBuffer.m_BufferMem, 0));
 }
 
 void VulkanBuffer::DestroyBuffer(void)
@@ -93,9 +93,9 @@ void VulkanBuffer::DestroyBuffer(void)
     {
         for (auto& desc : Buf.second)
         {
-            vkDestroyBuffer(Instance->GetDevice()->GetDevice(), desc.m_Buffer, nullptr);
+            vkDestroyBuffer(VulkanInstance->GetDevice()->GetDevice(), desc.m_Buffer, nullptr);
 
-            vkFreeMemory(Instance->GetDevice()->GetDevice(), desc.m_BufferMem, nullptr);
+            vkFreeMemory(VulkanInstance->GetDevice()->GetDevice(), desc.m_BufferMem, nullptr);
         }
     }
 }

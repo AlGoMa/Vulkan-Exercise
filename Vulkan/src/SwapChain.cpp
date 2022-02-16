@@ -3,7 +3,7 @@
 #include "SwapChain.h"
 #include <array>
 #include "VulkanManager.h"
-
+#include <GLFW/glfw3native.h>
 
 VkResult SwapChain::CreateSurface(const void* in_Window)
 {
@@ -12,12 +12,12 @@ VkResult SwapChain::CreateSurface(const void* in_Window)
     createInfo.hwnd = glfwGetWin32Window((GLFWwindow*)in_Window);
     createInfo.hinstance = GetModuleHandle(nullptr);
 
-    return vkCreateWin32SurfaceKHR(Instance->GetApp(), &createInfo, nullptr, &m_pSurface);
+    return vkCreateWin32SurfaceKHR(VulkanInstance->GetApp(), &createInfo, nullptr, &m_pSurface);
 }
 
 VkResult SwapChain::CreateSwapChain(const void* in_Window) {
     SCSupportDetails stSwapChainSupport = QuerySwapChainSupport();
-
+    
     VkSurfaceFormatKHR stSurfaceFormat = ChooseSwapSurfaceFormat(stSwapChainSupport.formats);
     VkPresentModeKHR stPresentMode = ChooseSwapPresentMode(stSwapChainSupport.presentModes);
     VkExtent2D stExtent = ChooseSwapExtent(stSwapChainSupport.capabilities, in_Window);
@@ -38,7 +38,7 @@ VkResult SwapChain::CreateSwapChain(const void* in_Window) {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    Device::FamilyType cachedFam = Instance->GetDevice()->GetFamily();
+    Device::FamilyType cachedFam = VulkanInstance->GetDevice()->GetFamily();
 
     if (cachedFam.m_uGPFam != cachedFam.m_uPntFam) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -59,29 +59,29 @@ VkResult SwapChain::CreateSwapChain(const void* in_Window) {
     m_vSwapChainImageFormat = stSurfaceFormat.format;
     m_vSwapChainExtent = stExtent;
 
-    return static_cast<VkResult>(vkCreateSwapchainKHR(Instance->GetDevice()->GetDevice(), &createInfo, nullptr, &m_pSwapChain) | CreateImages());
+    return static_cast<VkResult>(vkCreateSwapchainKHR(VulkanInstance->GetDevice()->GetDevice(), &createInfo, nullptr, &m_pSwapChain) | CreateImages());
 }
 
 SwapChain::SCSupportDetails  SwapChain::QuerySwapChainSupport(void) 
 {
     SCSupportDetails  stDetails;
 
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Instance->GetDevice()->GetPhysicalDevice(), m_pSurface, &stDetails.capabilities);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInstance->GetDevice()->GetPhysicalDevice(), m_pSurface, &stDetails.capabilities);
 
     uint32_t unFormatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(Instance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unFormatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(VulkanInstance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unFormatCount, nullptr);
 
     if (0 != unFormatCount) {
         stDetails.formats.resize(unFormatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(Instance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unFormatCount, stDetails.formats.data());
+        vkGetPhysicalDeviceSurfaceFormatsKHR(VulkanInstance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unFormatCount, stDetails.formats.data());
     }
 
     uint32_t unPresentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(Instance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unPresentModeCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(VulkanInstance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unPresentModeCount, nullptr);
 
     if (0 != unPresentModeCount) {
         stDetails.presentModes.resize(unPresentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(Instance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unPresentModeCount, stDetails.presentModes.data());
+        vkGetPhysicalDeviceSurfacePresentModesKHR(VulkanInstance->GetDevice()->GetPhysicalDevice(), m_pSurface, &unPresentModeCount, stDetails.presentModes.data());
     }
 
     return stDetails;
@@ -98,14 +98,14 @@ VkResult SwapChain::CreateFramebuffers(void)
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = Instance->GetPipeline()->GetRenderpass();
+        framebufferInfo.renderPass = VulkanInstance->GetPipeline()->GetRenderpass();
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = m_vSwapChainExtent.width;
         framebufferInfo.height = m_vSwapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(Instance->GetDevice()->GetDevice(), &framebufferInfo, nullptr, &m_vSwapChainFramebuffers[i]) != VK_SUCCESS) {
+        if (vkCreateFramebuffer(VulkanInstance->GetDevice()->GetDevice(), &framebufferInfo, nullptr, &m_vSwapChainFramebuffers[i]) != VK_SUCCESS) {
             throw std::runtime_error("failed to create framebuffer!");
         }
     }
@@ -126,7 +126,7 @@ VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfac
 
 VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& in_vAvailablePresentModes) {
     return (*std::find_if(in_vAvailablePresentModes.crbegin(), in_vAvailablePresentModes.crend(), [](const auto& present) {
-        return VK_PRESENT_MODE_MAILBOX_KHR == present;
+        return VK_PRESENT_MODE_MAILBOX_KHR == present || VK_PRESENT_MODE_FIFO_KHR == present;
     }));
 }
 
@@ -148,12 +148,12 @@ VkResult SwapChain::CreateImages(void)
 {
     uint32_t unImageCount = 0;
 
-    if (VK_SUCCESS == vkGetSwapchainImagesKHR(Instance->GetDevice()->GetDevice(), m_pSwapChain, &unImageCount, nullptr))
+    if (VK_SUCCESS == vkGetSwapchainImagesKHR(VulkanInstance->GetDevice()->GetDevice(), m_pSwapChain, &unImageCount, nullptr))
     {
         m_vSwapChainImages.resize(unImageCount);
     }
 
-    if (VK_SUCCESS == vkGetSwapchainImagesKHR(Instance->GetDevice()->GetDevice(), m_pSwapChain, &unImageCount, m_vSwapChainImages.data()))
+    if (VK_SUCCESS == vkGetSwapchainImagesKHR(VulkanInstance->GetDevice()->GetDevice(), m_pSwapChain, &unImageCount, m_vSwapChainImages.data()))
     {
         m_vSwapChainImageViews.resize(unImageCount);
     }
@@ -174,7 +174,7 @@ VkResult SwapChain::CreateImages(void)
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(Instance->GetDevice()->GetDevice(), &createInfo, nullptr, &m_vSwapChainImageViews[i]) != VK_SUCCESS) {
+        if (vkCreateImageView(VulkanInstance->GetDevice()->GetDevice(), &createInfo, nullptr, &m_vSwapChainImageViews[i]) != VK_SUCCESS) {
             throw std::runtime_error("failed to create image views!");
         }
     }
@@ -204,7 +204,7 @@ VkResult SwapChain::CreateDescriptorPool(void)
     poolInfo.pPoolSizes = aPoolSizes.data();
     poolInfo.maxSets = static_cast<uint32_t>(m_vSwapChainImages.size());
 
-    if ((eResult = vkCreateDescriptorPool(Instance->GetDevice()->GetDevice(), &poolInfo, nullptr, &m_DescriptorPool)) != VK_SUCCESS)
+    if ((eResult = vkCreateDescriptorPool(VulkanInstance->GetDevice()->GetDevice(), &poolInfo, nullptr, &m_DescriptorPool)) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create descriptor pool!");
     }
@@ -226,7 +226,7 @@ VkResult SwapChain::CreateDescriptorSets(void)
         stAllocInfo.descriptorSetCount = 1;
         stAllocInfo.pSetLayouts = &m_pConstantBuffer->GetDescriptor();
 
-        if ((eResult = vkAllocateDescriptorSets(Instance->GetDevice()->GetDevice(), &stAllocInfo, &m_vDescriptorSets[i])) != VK_SUCCESS)
+        if ((eResult = vkAllocateDescriptorSets(VulkanInstance->GetDevice()->GetDevice(), &stAllocInfo, &m_vDescriptorSets[i])) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
@@ -257,7 +257,7 @@ VkResult SwapChain::CreateDescriptorSets(void)
         stDescriptorWrites[1].descriptorCount = 1;
         stDescriptorWrites[1].pBufferInfo = &stBufferSceneInfo;
 
-        vkUpdateDescriptorSets(Instance->GetDevice()->GetDevice(), stDescriptorWrites.size(), stDescriptorWrites.data(), 0, nullptr);
+        vkUpdateDescriptorSets(VulkanInstance->GetDevice()->GetDevice(), stDescriptorWrites.size(), stDescriptorWrites.data(), 0, nullptr);
     }
 
     return eResult;
@@ -266,21 +266,21 @@ VkResult SwapChain::CreateDescriptorSets(void)
 void SwapChain::DestroySwapChain(void) 
 {
     for (auto framebuffer : m_vSwapChainFramebuffers) {
-        vkDestroyFramebuffer(Instance->GetDevice()->GetDevice(), framebuffer, nullptr);
+        vkDestroyFramebuffer(VulkanInstance->GetDevice()->GetDevice(), framebuffer, nullptr);
     }
 
     for (auto imageView : m_vSwapChainImageViews) {
-        vkDestroyImageView(Instance->GetDevice()->GetDevice(), imageView, nullptr);
+        vkDestroyImageView(VulkanInstance->GetDevice()->GetDevice(), imageView, nullptr);
     }
 
-    vkDestroySwapchainKHR(Instance->GetDevice()->GetDevice(), m_pSwapChain, nullptr);
-     
+    vkDestroySwapchainKHR(VulkanInstance->GetDevice()->GetDevice(), m_pSwapChain, nullptr);
+
     m_pConstantBuffer.get()->DestroyBuffer();
 
-    vkDestroyDescriptorPool(Instance->GetDevice()->GetDevice(), m_DescriptorPool, nullptr);
+    vkDestroyDescriptorPool(VulkanInstance->GetDevice()->GetDevice(), m_DescriptorPool, nullptr);
 }
 
 void SwapChain::DestroySurface(void)
 {
-    vkDestroySurfaceKHR(Instance->GetApp(), m_pSurface, nullptr);
+    vkDestroySurfaceKHR(VulkanInstance->GetApp(), m_pSurface, nullptr);
 }

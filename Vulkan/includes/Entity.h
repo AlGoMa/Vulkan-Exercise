@@ -13,10 +13,10 @@ public:
     Entity(void) = default;
     ~Entity(void) = default;
 
-    inline VulkanBuffer* GetVertexBuffer (VulkanBuffer::BufferType in_eType) { return m_mBuffers.find(in_eType)->second; }
+    inline VulkanBuffer* GetBuffer (VulkanBuffer::BufferType in_eType) { return m_mBuffers.find(in_eType)->second; }
     bool                 AddBuffer (VulkanBuffer* in_pBuffer);
     bool                 RemoveBuffer (VulkanBuffer::BufferType in_eBuffer);
-    virtual bool         LoadObj(std::string in_pszFile) override;
+    virtual bool         LoadObj(const std::string in_pszFile) override;
     virtual void         Destroy (void);
 
 private:

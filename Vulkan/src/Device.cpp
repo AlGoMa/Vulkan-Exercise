@@ -77,7 +77,7 @@ Device::FamilyType Device::SelectPhysicalDevice(void)
 
     uint32_t unDeviceCount = 0;
 
-    if ((VK_SUCCESS != vkEnumeratePhysicalDevices(Instance->GetApp(), &unDeviceCount, nullptr)) ||
+    if ((VK_SUCCESS != vkEnumeratePhysicalDevices(VulkanInstance->GetApp(), &unDeviceCount, nullptr)) ||
         (0 >= unDeviceCount))
     {
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
@@ -85,7 +85,7 @@ Device::FamilyType Device::SelectPhysicalDevice(void)
 
     std::vector<VkPhysicalDevice> vDevices(unDeviceCount);
 
-    (void)vkEnumeratePhysicalDevices(Instance->GetApp(), &unDeviceCount, vDevices.data());
+    (void)vkEnumeratePhysicalDevices(VulkanInstance->GetApp(), &unDeviceCount, vDevices.data());
 
     m_pPyshicalDev = (*std::find_if(vDevices.cbegin(), vDevices.cend(),
         [=, &out_sFam](VkPhysicalDevice in_device)
@@ -109,9 +109,9 @@ bool Device::QueryFamily(const VkPhysicalDevice in_Device, FamilyType& out_vFami
     [=, &unIndex, &out_vFamily](const auto& fam)
         {
             VkBool32 bPresentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(in_Device, unIndex, Instance->GetSC()->GetSurface(), &bPresentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(in_Device, unIndex, VulkanInstance->GetSC()->GetSurface(), &bPresentSupport);
             
-            if ((fam.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (fam.queueFlags & VK_QUEUE_COMPUTE_BIT)) out_vFamily.m_uGPFam = unIndex;
+            if ((fam.queueFlags & VK_QUEUE_GRAPHICS_BIT)) out_vFamily.m_uGPFam = unIndex;
             if (bPresentSupport)  out_vFamily.m_uPntFam = unIndex;
 
             return out_vFamily.IsSupported();
@@ -126,7 +126,6 @@ bool Device::CheckDeviceExtensionSupport(const VkPhysicalDevice in_Device) {
 
     std::vector<VkExtensionProperties> vAvlbExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(in_Device, nullptr, &extensionCount, vAvlbExtensions.data());
-
 
     std::set<std::string> seRequiredExtensions(m_vCachedDeviceExt.begin(), m_vCachedDeviceExt.end());
 

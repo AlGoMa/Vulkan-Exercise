@@ -31,10 +31,10 @@ namespace App::Utilities::Gfx
     struct Vertex
     {
         Vertex(void) :
-            m_vPosition(App::Math::Vector()),
-            m_vNormals(App::Math::Vector()),
-            m_vColor(App::Math::Vector()),
-            aUVCoords()
+            m_vPosition(Vector()),
+            m_vNormals(Vector::Zero()),
+            m_vColor(Vector::Zero()),
+            aUVs()
         {
         };
 
@@ -43,7 +43,7 @@ namespace App::Utilities::Gfx
             m_vNormals(in_vNorm),
             m_vColor(in_vColor)
         {
-            memcpy(&aUVCoords[0], std::vector<float>{ in_fUcoord, in_fVcoord }.data(), sizeof(aUVCoords));
+            memcpy(&aUVs[0], std::vector<float>{ in_fUcoord, in_fVcoord }.data(), sizeof(aUVs));
         };
 
         bool operator==(const Vertex& other) const
@@ -65,13 +65,13 @@ namespace App::Utilities::Gfx
 
             struct { float m_fUcoord, m_fVcoord; };
 
-            float aUVCoords[2];
+            float aUVs[2];
         };
     };
 
     template <typename TBuffer, typename TMem, typename TDescriptor>
     class Buffer : 
-        public App::Resources::IResource<Buffer<TBuffer, TMem, TDescriptor>>
+        public Common::Resources::IResource<Buffer<TBuffer, TMem, TDescriptor>>
     {
     public:
         enum class BufferType : uint8_t
@@ -103,7 +103,7 @@ namespace App::Utilities::Gfx
     
     public:
         inline const BufferType GetBufferType(void) const { return m_eType; }
-        inline       DescBuffer GetBuffer(const std::string in_strBuffer, const uint32_t in_unIndex = 0) noexcept { return m_mBufferContainer[in_strBuffer][in_unIndex]; }
+        inline       DescBuffer GetBuffer    (const std::string in_strBuffer, const uint32_t in_unIndex = 0) noexcept { return m_mBufferContainer[in_strBuffer][in_unIndex]; }
         
     protected:
         BufferType m_eType;

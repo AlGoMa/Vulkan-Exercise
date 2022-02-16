@@ -1,7 +1,8 @@
 #include <FSM.h>
+#include <Utilities.h>
 
 App::FiniteStateMachine::FSM::FSM(void) : 
-    App::Resources::IResource<App::FiniteStateMachine::FSM>(App::Resources::ClassName(typeid(App::FiniteStateMachine::FSM).name()))
+    Common::Resources::IResource<App::FiniteStateMachine::FSM>(Common::Resources::ClassName(typeid(App::FiniteStateMachine::FSM).name()))
 {
 }
 
@@ -32,8 +33,8 @@ const std::string  App::FiniteStateMachine::FSM::CurrentState(void)
 
 void App::FiniteStateMachine::FSM::AddState(const State* in_pNewState, const State* in_obSubstate)
 {
-    if ((NULL != in_pNewState) &&
-        (NULL == GetState(in_pNewState->GetHashID())))
+    if ((nullptr != in_pNewState) &&
+        (nullptr == GetState(in_pNewState->GetHashID())))
     {
         m_vecStates.push_back(const_cast<State*>(in_pNewState));
         m_vecStates.back()->SetOwner(this);
@@ -44,8 +45,8 @@ void App::FiniteStateMachine::FSM::AddState(const State* in_pNewState, const Sta
 void App::FiniteStateMachine::FSM::LinkToSuperState(t_IntU64 in_obSubState, t_IntU64 in_obSuperState)
 {
     if ((m_dicSuperStates.find(in_obSubState) != m_dicSuperStates.end()) &&
-        (NULL != GetState(in_obSubState)) &&
-        (NULL != GetState(in_obSuperState)))
+        (nullptr != GetState(in_obSubState)) &&
+        (nullptr != GetState(in_obSuperState)))
     {
         m_dicSuperStates.insert(std::make_pair(in_obSubState, in_obSuperState));
     }
@@ -62,9 +63,9 @@ void App::FiniteStateMachine::FSM::UnlinkToSuperState(const t_IntU64& in_unSubSt
 
 bool App::FiniteStateMachine::FSM::RemoveState(const t_IntU64& in_u32StateID)
 {
-    State* pRqState = NULL;
+    State* pRqState = nullptr;
 
-    if (NULL != (pRqState = const_cast<State*>(GetState(in_u32StateID))))
+    if (nullptr != (pRqState = const_cast<State*>(GetState(in_u32StateID))))
     {
         m_unCurrentState = m_unCurrentState != pRqState->GetHashID() ?
             m_unCurrentState : 0;
@@ -76,14 +77,14 @@ bool App::FiniteStateMachine::FSM::RemoveState(const t_IntU64& in_u32StateID)
         m_vecStates.erase(GetStatePair(pRqState->GetHashID()).first);
     }
 
-    return NULL != pRqState;
+    return nullptr != pRqState;
 }
 
 void App::FiniteStateMachine::FSM::InitState(const t_IntU64& in_unStateID, bool in_bInitSuperState)
 {
-    State* pCurrentState = NULL;
+    State* pCurrentState = nullptr;
 
-    if (NULL != (pCurrentState = const_cast<State*>(GetState(in_unStateID))) &&
+    if (nullptr != (pCurrentState = const_cast<State*>(GetState(in_unStateID))) &&
         m_unCurrentState != pCurrentState->GetHashID()
         )
     {
@@ -91,7 +92,7 @@ void App::FiniteStateMachine::FSM::InitState(const t_IntU64& in_unStateID, bool 
 
         if (in_bInitSuperState &&
             0 < (unCurrent = pCurrentState->GetSuperState()) &&
-            NULL != (pCurrentState = const_cast<State*>(GetState(unCurrent)))
+            nullptr != (pCurrentState = const_cast<State*>(GetState(unCurrent)))
             )
         {
             pCurrentState->OnInit();
@@ -99,7 +100,7 @@ void App::FiniteStateMachine::FSM::InitState(const t_IntU64& in_unStateID, bool 
 
         unCurrent = pCurrentState->GetHashID();
 
-        while (NULL != (pCurrentState = const_cast<State*>(GetState(unCurrent))))
+        while (nullptr != (pCurrentState = const_cast<State*>(GetState(unCurrent))))
         {
             pCurrentState->OnInit();
             m_unCurrentState = pCurrentState->GetHashID();
@@ -131,7 +132,7 @@ void App::FiniteStateMachine::FSM::DispatchAll(void)
 
 void App::FiniteStateMachine::FSM::DispatchEvent(const Event* in_pEvent)
 {
-    if (NULL != in_pEvent)
+    if (nullptr != in_pEvent)
     {
 #ifdef BROADCAST
         t_IntU32 unSourceState = m_unCurrentState;
@@ -140,7 +141,7 @@ void App::FiniteStateMachine::FSM::DispatchEvent(const Event* in_pEvent)
         {
             State* pCurrentState = const_cast<State*>(GetState(unSourceState));
 
-            if (NULL != pCurrentState)
+            if (nullptr != pCurrentState)
             {
 
                 pCurrentState->OnUpdate(const_cast<Event*>(in_pEvent));
@@ -155,9 +156,9 @@ void App::FiniteStateMachine::FSM::DispatchEvent(const Event* in_pEvent)
 
 void App::FiniteStateMachine::FSM::ChangeState(const t_IntU64& in_obState)
 {
-    State* pTargetState = NULL;
+    State* pTargetState = nullptr;
 
-    if (NULL != (pTargetState = const_cast<State*>(GetState(in_obState))) &&
+    if (nullptr != (pTargetState = const_cast<State*>(GetState(in_obState))) &&
         (m_unCurrentState != pTargetState->GetHashID())
         )
     {
@@ -168,7 +169,7 @@ void App::FiniteStateMachine::FSM::ChangeState(const t_IntU64& in_obState)
         {
             State* pCurrentState = const_cast<State*>(GetState(nCurrentState));
 
-            if (NULL != pCurrentState)
+            if (nullptr != pCurrentState)
             {
                 t_IntU64 unSuperStateID = pTargetState->GetSuperState();
 
@@ -191,7 +192,7 @@ void App::FiniteStateMachine::FSM::ChangeState(const t_IntU64& in_obState)
 
 void App::FiniteStateMachine::FSM::AddEvent(Event* in_pNewEvent)
 {
-    if (NULL != in_pNewEvent)
+    if (nullptr != in_pNewEvent)
     {
         Events().push_back(in_pNewEvent);
     }
@@ -214,7 +215,7 @@ const App::FiniteStateMachine::State* App::FiniteStateMachine::FSM::GetState(con
 std::pair<std::vector<App::FiniteStateMachine::State*>::iterator, App::FiniteStateMachine::State*> App::FiniteStateMachine::FSM::GetStatePair(const t_IntU64& in_unStateID, eSeachType in_eSearchType)
 {
     std::vector<App::FiniteStateMachine::State*>::iterator out_it = m_vecStates.begin();
-    State* out_pState = NULL;
+    State* out_pState = nullptr;
 
     for (; out_it != m_vecStates.end(); out_it++)
     {
@@ -231,7 +232,7 @@ std::pair<std::vector<App::FiniteStateMachine::State*>::iterator, App::FiniteSta
 const App::FiniteStateMachine::State* App::FiniteStateMachine::FSM::QuerySuperState(const t_IntU64& in_objSubState)
 {
     return m_dicSuperStates.size() && m_dicSuperStates.find(in_objSubState) != m_dicSuperStates.end() ?
-        GetState(m_dicSuperStates.at(in_objSubState)) : NULL;
+        GetState(m_dicSuperStates.at(in_objSubState)) : nullptr;
 }
 
 void App::FiniteStateMachine::FSM::Reset()

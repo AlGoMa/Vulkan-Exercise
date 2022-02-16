@@ -22,8 +22,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{b59af647-4993-400f-944d-92a6a7d20a14}</ProjectGuid>
-    <RootNamespace>VulkanSample</RootNamespace>
+    <RootNamespace>RenderApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>RenderApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -74,36 +75,46 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Platform)\$(SolutionName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Platform)\$(SolutionName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Platform)\$(SolutionName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Platform)\$(SolutionName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ASSERTIONS_ENABLED</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)APIs\tinyobjloader;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\glm;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGL\includes;$(SolutionDir)Vulkan\includes;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes;$(SolutionDir)APIs\glm;$(SolutionDir)APIs\tinyobjloader\;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\imgui;$(SolutionDir)APIs\imgui\backends;$(SolutionDir)Utilities\includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)APIs\tinyobjloader\lib;$(ProjectDir)APIs\VulkanMemoryAllocator-master\lib;$(ProjectDir)Application\$(Configuration);$(ProjectDir)APIs\glfw-3.3.4\lib;$(ProjectDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;Application.lib;VulkanMemoryAllocatord.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)APIs\glfw-3.3.4\lib;$(SolutionDir)Libs\$(Configuration)\$(Platform);$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Vulkan.lib;Application.lib;glfw3.lib;vulkan-1.lib;Utilities.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,15 +125,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)APIs\tinyobjloader;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\glm;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGL\includes;$(SolutionDir)Vulkan\includes;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes;$(SolutionDir)APIs\glm;$(SolutionDir)APIs\tinyobjloader\;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\imgui;$(SolutionDir)APIs\imgui\backends;$(SolutionDir)Utilities\includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)APIs\tinyobjloader\lib;$(ProjectDir)APIs\VulkanMemoryAllocator-master\lib;$(ProjectDir)Application\$(Configuration);$(ProjectDir)APIs\glfw-3.3.4\lib;$(ProjectDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)APIs\glfw-3.3.4\lib;$(SolutionDir)Libs\$(Configuration)\$(Platform);$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;Application.lib;VulkanMemoryAllocatord.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,16 +141,18 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ASSERTIONS_ENABLED;ASSERTIONS_ENABLED</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)APIs\tinyobjloader;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\glm;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGL\includes;$(SolutionDir)Vulkan\includes;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes;$(SolutionDir)APIs\glm;$(SolutionDir)APIs\tinyobjloader\;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\imgui;$(SolutionDir)APIs\imgui\backends;$(SolutionDir)Utilities\includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)APIs\tinyobjloader\lib;$(ProjectDir)APIs\VulkanMemoryAllocator-master\lib;$(ProjectDir)Application\$(Configuration);$(ProjectDir)APIs\glfw-3.3.4\lib;$(ProjectDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;Application.lib;VulkanMemoryAllocatord.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)APIs\glfw-3.3.4\lib;$(SolutionDir)Libs\$(Configuration)\$(Platform);$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Vulkan.lib;Application.lib;glfw3.lib;vulkan-1.lib;Utilities.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,49 +163,41 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)APIs\tinyobjloader;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\glm;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGL\includes;$(SolutionDir)Vulkan\includes;%(AdditionalIncludeDirectories);$(SolutionDir)Application\includes;$(SolutionDir)APIs\glm;$(SolutionDir)APIs\tinyobjloader\;$(SolutionDir)APIs\VulkanMemoryAllocator-master\include;$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Include;$(SolutionDir)APIs\glfw-3.3.4\include;$(SolutionDir)APIs\imgui;$(SolutionDir)APIs\imgui\backends;$(SolutionDir)Utilities\includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)APIs\tinyobjloader\lib;$(ProjectDir)APIs\VulkanMemoryAllocator-master\lib;$(ProjectDir)Application\$(Configuration);$(ProjectDir)APIs\glfw-3.3.4\lib;$(ProjectDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)APIs\glfw-3.3.4\lib;$(SolutionDir)Libs\$(Configuration)\$(Platform);$(SolutionDir)APIs\VulkanSDK\1.2.189.2\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;Application.lib;VulkanMemoryAllocatord.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="Shaders\ComputeShaderVulkan.comp" />
+    <None Include="Shaders\Debug.frag" />
     <None Include="Shaders\Fragment.frag" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\ConstantBuffer.h" />
-    <ClInclude Include="includes\Device.h" />
-    <ClInclude Include="includes\Entity.h" />
-    <ClInclude Include="includes\IndexBuffer.h" />
-    <ClInclude Include="includes\Pipeline.h" />
-    <ClInclude Include="includes\StorageBuffer.h" />
-    <ClInclude Include="includes\SwapChain.h" />
-    <ClInclude Include="includes\VertexBuffer.h" />
-    <ClInclude Include="includes\VulkanBuffer.h" />
-    <ClInclude Include="includes\VulkanManager.h" />
-    <ClInclude Include="includes\VulkanWindow.h" />
+    <ClInclude Include="APIs\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="APIs\imgui\backends\imgui_impl_vulkan.h" />
+    <ClInclude Include="APIs\imgui\imconfig.h" />
+    <ClInclude Include="APIs\imgui\imgui.h" />
+    <ClInclude Include="includes\RenderApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ConstantBuffer.cpp" />
-    <ClCompile Include="src\Device.cpp" />
-    <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\IndexBuffer.cpp" />
+    <ClCompile Include="APIs\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="APIs\imgui\backends\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="APIs\imgui\imgui.cpp" />
+    <ClCompile Include="APIs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="APIs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="APIs\imgui\imgui_tables.cpp" />
+    <ClCompile Include="APIs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Pipeline.cpp" />
-    <ClCompile Include="src\StorageBuffer.cpp" />
-    <ClCompile Include="src\SwapChain.cpp" />
-    <ClCompile Include="src\VertexBuffer.cpp" />
-    <ClCompile Include="src\VulkanBuffer.cpp" />
-    <ClCompile Include="src\VulkanManager.cpp" />
-    <ClCompile Include="src\VulkanWindow.cpp" />
+    <ClCompile Include="src\RenderApp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

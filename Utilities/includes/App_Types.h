@@ -1,8 +1,5 @@
 #pragma once
 
-#define SAFE_RELEASE(p) if(NULL != p) { delete p; p = NULL;}
-#define ThrowException(h) if(FAILED(h)){ throw std::exception();}
-
 #ifdef _MQX
 /* HACK : there is a conflict with string.h */
 char * _strdup(const char *str);

@@ -39,7 +39,7 @@ namespace App::Managers
 
         virtual TContainer* GetElement(_In_ _Notnull_ _Const_ const TIdentifier& in_tIdentifier) noexcept
         {
-            return m_mpElements.end() != m_mpElements.find(in_tIdentifier) ? (*this)[in_tIdentifier] : NULL;
+            return m_mpElements.end() != m_mpElements.find(in_tIdentifier) ? (*this)[in_tIdentifier] : nullptr;
         }
 
         TContainer* operator[](_In_ _Const_ const TIdentifier in_tIdentifier) noexcept

@@ -1,10 +1,12 @@
 #include "GeometryMesh.h"
 using namespace App::Utilities::Gfx;
 
+using axis = Vector::axis;
+
 void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
-    Vector in_vPosition,
-    Vector in_vSize,
-    Vector in_vSolidColor)
+                                   Vector in_vPosition,
+                                   Vector in_vSize,
+                                   Vector in_vSolidColor)
 {
     Vector vMiddlePoint = in_vSize;
 
@@ -12,10 +14,10 @@ void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
     {
     case GeometryMesh::MeshesType::Plane:
     {
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X - vMiddlePoint.X, in_vPosition.Y - vMiddlePoint.Y, in_vPosition.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, -1.0f, -1.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X + vMiddlePoint.X, in_vPosition.Y - vMiddlePoint.Y, in_vPosition.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 1.0f, -1.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X + vMiddlePoint.X, in_vPosition.Y + vMiddlePoint.Y, in_vPosition.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 1.0f, 1.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X - vMiddlePoint.X, in_vPosition.Y + vMiddlePoint.Y, in_vPosition.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, -1.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] - vMiddlePoint[axis::x], in_vPosition[axis::y] - vMiddlePoint[axis::y], in_vPosition[axis::z]), Vector::Up(), in_vSolidColor, -1.0f, -1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] + vMiddlePoint[axis::x], in_vPosition[axis::y] - vMiddlePoint[axis::y], in_vPosition[axis::z]), Vector::Up(), in_vSolidColor, 1.0f, -1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] + vMiddlePoint[axis::x], in_vPosition[axis::y] + vMiddlePoint[axis::y], in_vPosition[axis::z]), Vector::Up(), in_vSolidColor, 1.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] - vMiddlePoint[axis::x], in_vPosition[axis::y] + vMiddlePoint[axis::y], in_vPosition[axis::z]), Vector::Up(), in_vSolidColor, -1.0f, 1.0f));
         //, 1, 3, 3, 1, 2
         m_aIndexlist.push_back(0);
         m_aIndexlist.push_back(1);
@@ -27,11 +29,11 @@ void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
     break;
     case GeometryMesh::MeshesType::Piramid:
     {
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X - vMiddlePoint.X, in_vPosition.Y, in_vPosition.Z + vMiddlePoint.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 0.0f, 0.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X + vMiddlePoint.X, in_vPosition.Y, in_vPosition.Z + vMiddlePoint.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 1.0f, 0.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X - vMiddlePoint.X, in_vPosition.Y, in_vPosition.Z - vMiddlePoint.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 0.0f, 1.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X + vMiddlePoint.X, in_vPosition.Y, in_vPosition.Z - vMiddlePoint.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 1.0f, 1.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition.X, in_vPosition.Y + in_vSize.Y, in_vPosition.Z), Vector(0.0f, 1.0f, 0.0f), in_vSolidColor, 0.5f, 0.5f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] - vMiddlePoint[axis::x], in_vPosition[axis::y], in_vPosition[axis::z] + vMiddlePoint[axis::z]), Vector::Up(), in_vSolidColor, 0.0f, 0.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] + vMiddlePoint[axis::x], in_vPosition[axis::y], in_vPosition[axis::z] + vMiddlePoint[axis::z]), Vector::Up(), in_vSolidColor, 1.0f, 0.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] - vMiddlePoint[axis::x], in_vPosition[axis::y], in_vPosition[axis::z] - vMiddlePoint[axis::z]), Vector::Up(), in_vSolidColor, 0.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x] + vMiddlePoint[axis::x], in_vPosition[axis::y], in_vPosition[axis::z] - vMiddlePoint[axis::z]), Vector::Up(), in_vSolidColor, 1.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(in_vPosition[axis::x], in_vPosition[axis::y] + in_vSize[axis::y], in_vPosition[axis::z]), Vector::Up(), in_vSolidColor, 0.5f, 0.5f));
         //, 1, 3, 3, 1, 2
         /*Normals calculation. Slow process.*/
         Vector V = m_aVertexInfo[1].m_vPosition - m_aVertexInfo[0].m_vPosition;
@@ -81,9 +83,9 @@ void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
     break;
     case GeometryMesh::MeshesType::Triangle:
     {
-        m_aVertexInfo.push_back(Vertex(Vector(0.0f, -0.5f, 0.0f), Vector(0.0f, 0.0f, 1.0f), in_vSolidColor, 0.0f, 0.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(0.5f, 0.5f, 0.0f), Vector(0.0f, 0.0f, 1.0f), in_vSolidColor, 1.0f, 0.0f));
-        m_aVertexInfo.push_back(Vertex(Vector(-0.5f, 0.5f, 0.0f), Vector(0.0f, 0.0f, 1.0f), in_vSolidColor, 1.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(0.0f, -0.5f, 0.0f), Vector::Forward(), in_vSolidColor, 0.0f, 0.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(0.5f, 0.5f, 0.0f),  Vector::Forward(), in_vSolidColor, 1.0f, 1.0f));
+        m_aVertexInfo.push_back(Vertex(Vector(-0.5f, 0.5f, 0.0f), Vector::Forward(), in_vSolidColor, 0.0f, 1.0f));
 
         m_aIndexlist.push_back(0);
         m_aIndexlist.push_back(1);
@@ -95,6 +97,7 @@ void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
     }
 }
 
+[[deprecated]]
 bool GeometryMesh::LoadObj(std::string in_pszFile)
 {
     struct UV
@@ -116,20 +119,14 @@ bool GeometryMesh::LoadObj(std::string in_pszFile)
             if (!strcmp(strLine.c_str(), "v"))
             {
                 Vector vVertice;
-
-                streamMesh >> vVertice.X >> vVertice.Y >> vVertice.Z;
-
-                //vVertice = Vector((float)d_x, (float)d_y, (float)d_z);
-
+                streamMesh >> vVertice[axis::x] >> vVertice[axis::y] >> vVertice[axis::z];
                 tmpVertices.push_back(vVertice);
             }
             else if (!strcmp(strLine.c_str(), "vn"))
             {
                 // Vertex Normal
-                
                 Vector vNormal ( 0.0f, 0.0f, 0.0f, 0.0f);
-
-                streamMesh >> vNormal.X >> vNormal.Y >> vNormal.Z;
+                streamMesh >> vNormal[axis::x] >> vNormal[axis::y] >> vNormal[axis::z];
                 tmpNormals.push_back(vNormal);
             }
             else if (!strcmp(strLine.c_str(), "vt"))
@@ -142,8 +139,8 @@ bool GeometryMesh::LoadObj(std::string in_pszFile)
             else if (!strcmp(strLine.c_str(), "f"))
             {
                 uint32_t  unPosition,
-                            unTexCoord,
-                            unNormal;
+                          unTexCoord,
+                          unNormal;
                 Vertex	vertex;
 
                 for (unsigned int nFaces = 0; nFaces < 3; nFaces++)
@@ -203,7 +200,6 @@ bool GeometryMesh::LoadObj(std::string in_pszFile)
 
     return true;
 }
-
 
 void GeometryMesh::Destroy(void)
 {

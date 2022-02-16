@@ -117,7 +117,7 @@ VkResult VulkanManager::vkCreateVulkanInstance(const char* in_pszAppName, const 
                 VK_ERROR_INITIALIZATION_FAILED;
 }
 
-VkResult VulkanManager::CreateDebugUtilsMsn(const VkAllocationCallbacks* pAllocator) {
+VkResult VulkanManager::CreateDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator) {
     VkResult eResult = VK_SUCCESS;
 
     if (g_bEnableValidationLayers)
@@ -125,7 +125,7 @@ VkResult VulkanManager::CreateDebugUtilsMsn(const VkAllocationCallbacks* pAlloca
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_pVulkanApp, "vkCreateDebugUtilsMessengerEXT");
 
         eResult = (nullptr != func) ?
-            func(m_pVulkanApp, &m_sCreateInfo, pAllocator, &m_pDebugMessenger)
+            func(m_pVulkanApp, &m_sCreateInfo, in_pAllocator, &m_pDebugMessenger)
             :
             VK_ERROR_EXTENSION_NOT_PRESENT;
     }
@@ -133,14 +133,14 @@ VkResult VulkanManager::CreateDebugUtilsMsn(const VkAllocationCallbacks* pAlloca
     return eResult;
 }
 
-VkResult VulkanManager::DestroyDebugUtilsMsn(const VkAllocationCallbacks* pAllocator) {
+VkResult VulkanManager::DestroyDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator) {
     VkResult eResult = VK_SUCCESS;
 
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_pVulkanApp, "vkDestroyDebugUtilsMessengerEXT");
 
     if (nullptr != func)
     {
-        func(m_pVulkanApp, m_pDebugMessenger, pAllocator);
+        func(m_pVulkanApp, m_pDebugMessenger, in_pAllocator);
     }
     else {
         eResult  = VK_ERROR_EXTENSION_NOT_PRESENT;
@@ -299,14 +299,4 @@ void VulkanManager::vDestroy(void)
     }
 
     vkDestroyInstance(m_pVulkanApp, nullptr);
-}
-
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanManager::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                            VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                                            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-                                                            void* pUserData)
-{
-    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
-    return VK_FALSE;
 }

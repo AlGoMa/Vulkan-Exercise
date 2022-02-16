@@ -6,7 +6,7 @@
 #include <optional>
 
 class Device final:
-    public App::Resources::IResource<Device>
+    public Common::Resources::IResource<Device>
 {
 public:
     Device(void) : m_pDevice(VK_NULL_HANDLE), m_pPyshicalDev(VK_NULL_HANDLE) {};

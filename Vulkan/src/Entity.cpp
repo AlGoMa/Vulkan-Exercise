@@ -40,7 +40,7 @@ bool Entity::RemoveBuffer(VulkanBuffer::BufferType in_eBuffer)
     return bResult;
 }
 
-bool Entity::LoadObj(std::string in_strObject)
+bool Entity::LoadObj(const std::string in_strObject)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -60,13 +60,15 @@ bool Entity::LoadObj(std::string in_strObject)
     {
         for (const auto& index : shape.mesh.indices)
         {
-            App::Utilities::Gfx::Vertex vertex{ App::Math::Vector(attrib.vertices[3 * index.vertex_index + 0],
+            App::Utilities::Gfx::Vertex vertex{ Vector(attrib.vertices[3 * index.vertex_index + 0],
                                                                   attrib.vertices[3 * index.vertex_index + 1],
                                                                   attrib.vertices[3 * index.vertex_index + 2]),
-                                                -1 != index.normal_index ? App::Math::Vector(attrib.normals[3 * index.normal_index + 0],
-                                                                                       attrib.normals[3 * index.normal_index + 1],
-                                                                                       attrib.normals[3 * index.normal_index + 2]) : App::Math::Vector(),
-                                                App::Math::Vector(1.0f, 1.0f, 1.0f),
+                                                -1 != index.normal_index ? 
+                                                Vector(attrib.normals[3 * index.normal_index + 0],
+                                                       attrib.normals[3 * index.normal_index + 1],
+                                                       attrib.normals[3 * index.normal_index + 2]) : 
+                                                Vector(),
+                                                Vector(1.0f, 1.0f, 1.0f),
                                                 attrib.texcoords[2 * index.texcoord_index + 0],
                                                 1.0f - attrib.texcoords[2 * index.texcoord_index + 1] };
 

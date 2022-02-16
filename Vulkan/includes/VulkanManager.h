@@ -1,14 +1,13 @@
 #pragma once
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
-#include <Singleton.h>
+#include "GLFW/glfw3.h"
+#include "vulkan/vulkan.h"
+#include "Singleton.h"
 #include "SwapChain.h"
 #include "Device.h"
 #include "Pipeline.h"
 #include "Entity.h"
 
-#define Instance VulkanManager::GetInstance()
+#define VulkanInstance VulkanManager::GetInstance()
 
 #ifdef NDEBUG
 constexpr bool g_bEnableValidationLayers = false;
@@ -19,13 +18,12 @@ constexpr bool g_bEnableValidationLayers = true;
 class VulkanManager :
     public App::SingletonPattern::Singleton<VulkanManager>
 {
-protected:
+public:
     VulkanManager(void) : m_pVulkanApp(nullptr),
                           m_pDebugMessenger(VK_NULL_HANDLE),
                           m_unFrame(0U)
     {}
-
-    ~VulkanManager(void) = default;
+    virtual ~VulkanManager(void) = default;
 
 public:
     VkResult vkCreateVulkanInstance(const char* in_pszAppName, const void* in_pvWindowInstance);
@@ -39,9 +37,9 @@ public:
     inline void               StopDevice  (void)                          { (void)vkDeviceWaitIdle(m_Device.GetDevice()); }
     
 private:
-    VkResult CreateDebugUtilsMsn(const VkAllocationCallbacks* pAllocator);
+    VkResult CreateDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator);
 
-    VkResult DestroyDebugUtilsMsn(const VkAllocationCallbacks* pAllocator);
+    VkResult DestroyDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator);
 
     bool     CheckValidationLayerSupport(const std::vector<const char*> in_vLayers);
     
@@ -50,13 +48,6 @@ private:
     VkResult CreateSemaphores(void);
 
     const std::vector<const char*> GetExtensions(void);
-
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                        VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-                                                        void* pUserData);
-
-    friend class Singleton<VulkanManager>;
 
     uint32_t                           m_unFrame;
     VkInstance                         m_pVulkanApp;
@@ -80,7 +71,16 @@ private:
                                                 VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
                                                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                                                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-                                                debugCallback,
+                                                [](VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                                   VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                                   const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                                   void* pUserData) {
+                                                    std::cerr << "validation layer - msg: " << pCallbackData->pMessage
+                                                              << "\nid: " << pCallbackData->pMessageIdName 
+                                                              << "\nseverity: " << messageSeverity
+                                                              << "\ntype: " << messageType << std::endl;
+                                                    return VK_FALSE;
+                                                },
                                                 nullptr
     };
 };

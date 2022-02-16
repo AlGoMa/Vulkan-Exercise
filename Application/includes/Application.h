@@ -15,7 +15,7 @@ namespace App
     namespace Managers
     {
         class Application : 
-            public Resources::IResource<Application>
+            public Common::Resources::IResource<Application>
         {
         public:
             typedef enum class AppBehavior : bool { Asynchronus = 0, Synchronus } AppBehavior;
@@ -78,15 +78,15 @@ namespace App
             EventState                  GetEventStateAndReset (uint16_t in_Event) noexcept;
 
             virtual inline void         SetParent             (const Application* in_pParent = nullptr) { m_pParent = const_cast<Application*>(in_pParent); }
-            inline void                 AttachEvent           (uint64_t in_eEvent) noexcept { m_mEvents.insert ( std::make_pair(in_eEvent, EventState::noactive)); }                       
-                                                              
-            inline Application*         GetParent             (void) const { return m_pParent; }
+            inline void                 AttachEvent           (uint64_t in_eEvent) noexcept { m_mEvents.insert ( std::make_pair(in_eEvent, EventState::noactive)); }
+            inline       Application*   GetParent             (void) const { return m_pParent; }
             inline const char*          GetAppName            (void) const { return GetName(); }
             inline const t_IntU64&      GetID                 (void) const { return GetHashID(); }
             inline const bool&          ResizableState        (void) const { return m_stAttributes.mAttributes.m_bResizable; }
             inline const bool&          FullScreenState       (void) const { return m_stAttributes.mAttributes.m_bFullScreen; }
             inline       AppDimentions& GetAppDimentions      (void)       { return m_stAttributes.mAttributes.m_stSize; }
-            inline const void*          GetWndInstance        (void) const { return m_pInstance; }
+            template<typename tclass>
+            inline       tclass*        GetWndInstance        (void) const { return static_cast<tclass*>(m_pInstance); }
             inline const EventState     GetEventState         (uint16_t in_Event) noexcept { return m_mEvents.find(in_Event)->second; }
             
             void*                          m_pInstance;

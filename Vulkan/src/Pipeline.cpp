@@ -47,9 +47,9 @@ VkResult Pipeline::CreatePipelineLayout(void)
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &Instance->GetSC()->GetCB()->GetDescriptor();
+    pipelineLayoutInfo.pSetLayouts = &VulkanInstance->GetSC()->GetCB()->GetDescriptor();
 
-    if ((eResult = vkCreatePipelineLayout(Instance->GetDevice()->GetDevice(), &pipelineLayoutInfo, nullptr, &m_mPipelines[PipelineType::graphics].m_ppLayout)) != VK_SUCCESS)
+    if ((eResult = vkCreatePipelineLayout(VulkanInstance->GetDevice()->GetDevice(), &pipelineLayoutInfo, nullptr, &m_mPipelines[PipelineType::graphics].m_ppLayout)) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create pipeline layout!");
     }
@@ -64,9 +64,9 @@ VkResult Pipeline::CreateComputePipelineLayout(void)
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &Instance->GetSC()->GetSB()->GetDescriptor();
+    pipelineLayoutInfo.pSetLayouts = &VulkanInstance->GetSC()->GetSB()->GetDescriptor();
 
-    if ((eResult = vkCreatePipelineLayout(Instance->GetDevice()->GetDevice(), &pipelineLayoutInfo, nullptr, &m_mPipelines[PipelineType::compute].m_ppLayout)) != VK_SUCCESS)
+    if ((eResult = vkCreatePipelineLayout(VulkanInstance->GetDevice()->GetDevice(), &pipelineLayoutInfo, nullptr, &m_mPipelines[PipelineType::compute].m_ppLayout)) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create compute pipeline layout!");
     }
@@ -98,14 +98,14 @@ VkResult Pipeline::CreateGraphicsPipeline(void)
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = (float)Instance->GetSC()->GetExtents().width;
-        viewport.height = (float)Instance->GetSC()->GetExtents().height;
+        viewport.width = (float)VulkanInstance->GetSC()->GetExtents().width;
+        viewport.height = (float)VulkanInstance->GetSC()->GetExtents().height;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
 
         VkRect2D scissor{};
         scissor.offset = { 0, 0 };
-        scissor.extent = Instance->GetSC()->GetExtents();
+        scissor.extent = VulkanInstance->GetSC()->GetExtents();
 
         VkPipelineViewportStateCreateInfo viewportState{};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -165,7 +165,7 @@ VkResult Pipeline::CreateGraphicsPipeline(void)
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if ((eResult = vkCreateGraphicsPipelines(Instance->GetDevice()->GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_mPipelines[PipelineType::graphics].m_pp)) != VK_SUCCESS)
+        if ((eResult = vkCreateGraphicsPipelines(VulkanInstance->GetDevice()->GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_mPipelines[PipelineType::graphics].m_pp)) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
@@ -183,7 +183,7 @@ VkResult Pipeline::CreateComputePipeline(void)
     stPipelineCreateInfo.stage = m_vShaderRes.back();
     stPipelineCreateInfo.layout = m_mPipelines[PipelineType::compute].m_ppLayout;
     
-    if ((eResult = vkCreateComputePipelines(Instance->GetDevice()->GetDevice(), VK_NULL_HANDLE, 1, &stPipelineCreateInfo, NULL, &m_mPipelines[PipelineType::compute].m_pp)) != VK_SUCCESS)
+    if ((eResult = vkCreateComputePipelines(VulkanInstance->GetDevice()->GetDevice(), VK_NULL_HANDLE, 1, &stPipelineCreateInfo, nullptr, &m_mPipelines[PipelineType::compute].m_pp)) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create compute pipeline layout!");
     }
@@ -194,7 +194,7 @@ VkResult Pipeline::CreateComputePipeline(void)
 VkResult Pipeline::CreateRenderPass(void)
 {
     VkAttachmentDescription stColorAttachment{};
-    stColorAttachment.format = Instance->GetSC()->GetFormats();
+    stColorAttachment.format = VulkanInstance->GetSC()->GetFormats();
     stColorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     stColorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     stColorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -229,7 +229,7 @@ VkResult Pipeline::CreateRenderPass(void)
     stRenderPassInfo.dependencyCount = 1;
     stRenderPassInfo.pDependencies = &stDependency;
 
-    return vkCreateRenderPass(Instance->GetDevice()->GetDevice(), &stRenderPassInfo, nullptr, &m_pRenderPass);
+    return vkCreateRenderPass(VulkanInstance->GetDevice()->GetDevice(), &stRenderPassInfo, nullptr, &m_pRenderPass);
 }
 
 VkShaderModule Pipeline::CreateShaderModule(const std::string& in_strFilename, VkStructureType in_unType)
@@ -242,7 +242,7 @@ VkShaderModule Pipeline::CreateShaderModule(const std::string& in_strFilename, V
 
     VkShaderModule shaderModule;
 
-    if (vkCreateShaderModule(Instance->GetDevice()->GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+    if (vkCreateShaderModule(VulkanInstance->GetDevice()->GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
         throw std::runtime_error("failed to create shader module!");
     }
 
@@ -253,15 +253,15 @@ VkResult Pipeline::CreateCommandBuffers(void)
 {
     VkResult eResult = VK_SUCCESS;
 
-    m_vCmdBuffers.resize(Instance->GetSC()->GetFramebuffer().size());
+    m_vCmdBuffers.resize(VulkanInstance->GetSC()->GetFramebuffer().size());
 
     VkCommandBufferAllocateInfo stAllocInfo{};
     stAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    stAllocInfo.commandPool = Instance->GetDevice()->GetCommandPool();
+    stAllocInfo.commandPool = VulkanInstance->GetDevice()->GetCommandPool();
     stAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     stAllocInfo.commandBufferCount = (uint32_t)m_vCmdBuffers.size();
 
-    if ((eResult = vkAllocateCommandBuffers(Instance->GetDevice()->GetDevice(), &stAllocInfo, m_vCmdBuffers.data())) != VK_SUCCESS)
+    if ((eResult = vkAllocateCommandBuffers(VulkanInstance->GetDevice()->GetDevice(), &stAllocInfo, m_vCmdBuffers.data())) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate command buffers!");
     }
@@ -288,9 +288,9 @@ VkResult Pipeline::UpdateCommandBuffers(Entity* in_pEntity, const uint32_t in_un
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = m_pRenderPass;
-    renderPassInfo.framebuffer = Instance->GetSC()->GetFramebuffer()[in_unFrame];
+    renderPassInfo.framebuffer = VulkanInstance->GetSC()->GetFramebuffer()[in_unFrame];
     renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = Instance->GetSC()->GetExtents();
+    renderPassInfo.renderArea.extent = VulkanInstance->GetSC()->GetExtents();
 
     VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
     renderPassInfo.clearValueCount = 1;
@@ -300,17 +300,17 @@ VkResult Pipeline::UpdateCommandBuffers(Entity* in_pEntity, const uint32_t in_un
 
     vkCmdBindPipeline(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, m_mPipelines[PipelineType::graphics].m_pp);
 
-    VkBuffer vertexBuffers[] = { in_pEntity->GetVertexBuffer(VertexBuffer::BufferType::vertex)->GetBuffer("Vertex").m_Buffer};
+    VkBuffer vertexBuffers[] = { in_pEntity->GetBuffer(VertexBuffer::BufferType::vertex)->GetBuffer("Vertex").m_Buffer};
     VkDeviceSize offsets[] = { 0 };
 
     vkCmdBindVertexBuffers(m_vCmdBuffers[in_unFrame], 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(m_vCmdBuffers[in_unFrame], in_pEntity->GetVertexBuffer(VertexBuffer::BufferType::index)->GetBuffer("Index").m_Buffer, 0, VK_INDEX_TYPE_UINT32);
+    vkCmdBindIndexBuffer(m_vCmdBuffers[in_unFrame], in_pEntity->GetBuffer(VertexBuffer::BufferType::index)->GetBuffer("Index").m_Buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    VkDeviceSize limits = Instance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
+    VkDeviceSize limits = VulkanInstance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
 
     uint32_t unOffset = 0;
-    vkCmdBindDescriptorSets(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, m_mPipelines[PipelineType::graphics].m_ppLayout, 0, 1, &Instance->GetSC()->GetDescriptors()[in_unFrame], 1, &unOffset);
+    vkCmdBindDescriptorSets(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, m_mPipelines[PipelineType::graphics].m_ppLayout, 0, 1, &VulkanInstance->GetSC()->GetDescriptors()[in_unFrame], 1, &unOffset);
 
     vkCmdDrawIndexed(m_vCmdBuffers[in_unFrame], static_cast<uint32_t>(in_pEntity->GetIndex().size()), 1, 0, 0, 0);
 
@@ -329,9 +329,9 @@ VkResult Pipeline::UpdateCSCommandBuffers(const uint32_t in_unFrame)
     
     //vkCmdPushConstants(m_vCmdBuffers[in_unFrame], m_mPipelines[PipelineType::compute].m_ppLayout, 
     //                   VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(glm::vec2), 
-    //                   &Instance->GetSC()->GetCB()->GetSceneData().MousePosition);
+    //                   &VulkanInstance->GetSC()->GetCB()->GetSceneData().MousePosition);
 
-    vkCmdBindDescriptorSets(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_COMPUTE, m_mPipelines[PipelineType::compute].m_ppLayout, 0, 1, &Instance->GetSC()->GetDescriptors()[in_unFrame], 0, NULL);
+    vkCmdBindDescriptorSets(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_COMPUTE, m_mPipelines[PipelineType::compute].m_ppLayout, 0, 1, &VulkanInstance->GetSC()->GetDescriptors()[in_unFrame], 0, nullptr);
 
     vkCmdDispatch(m_vCmdBuffers[in_unFrame], 1, 1, 1);
 
@@ -340,25 +340,25 @@ VkResult Pipeline::UpdateCSCommandBuffers(const uint32_t in_unFrame)
 
 void Pipeline::DestroyPipeLine(void)
 {
-    vkDestroyPipeline(Instance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_pp, nullptr);
-    vkDestroyPipelineLayout(Instance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_ppLayout, nullptr);
+    vkDestroyPipeline(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_pp, nullptr);
+    vkDestroyPipelineLayout(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_ppLayout, nullptr);
 
-    vkDestroyRenderPass(Instance->GetDevice()->GetDevice(), m_pRenderPass, nullptr);
+    vkDestroyRenderPass(VulkanInstance->GetDevice()->GetDevice(), m_pRenderPass, nullptr);
 }
 
 void Pipeline::DestroyComputePipeLine(void)
 {
-    vkDestroyPipeline(Instance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_pp, nullptr);
-    vkDestroyPipelineLayout(Instance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_ppLayout, nullptr);
+    vkDestroyPipeline(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_pp, nullptr);
+    vkDestroyPipelineLayout(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_ppLayout, nullptr);
 }
 
 void Pipeline::DestroyBuffers(void)
 {
-    vkFreeCommandBuffers(Instance->GetDevice()->GetDevice(), Instance->GetDevice()->GetCommandPool(), static_cast<uint32_t>(m_vCmdBuffers.size()), m_vCmdBuffers.data());
+    vkFreeCommandBuffers(VulkanInstance->GetDevice()->GetDevice(), VulkanInstance->GetDevice()->GetCommandPool(), static_cast<uint32_t>(m_vCmdBuffers.size()), m_vCmdBuffers.data());
 }
 
 void Pipeline::Destroy(void)
 {
     for (auto& desc : m_vShaderRes)
-        vkDestroyShaderModule(Instance->GetDevice()->GetDevice(), desc.module, nullptr);
+        vkDestroyShaderModule(VulkanInstance->GetDevice()->GetDevice(), desc.module, nullptr);
 }
