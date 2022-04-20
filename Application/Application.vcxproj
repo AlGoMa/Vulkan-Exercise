@@ -173,8 +173,10 @@
     <ClInclude Include="includes\Camera.h" />
     <ClInclude Include="includes\FSM.h" />
     <ClInclude Include="includes\GeometryMesh.h" />
+    <ClInclude Include="includes\Material.h" />
     <ClInclude Include="includes\Matrix.h" />
     <ClInclude Include="includes\Quaternion.h" />
+    <ClInclude Include="includes\Ray.h" />
     <ClInclude Include="includes\Singleton.h" />
     <ClInclude Include="includes\Vector.h" />
   </ItemGroup>

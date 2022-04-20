@@ -10,7 +10,7 @@ App::Math::Vector App::Math::Quaternion::SetRotation(const Vector& in_vAxis, con
 App::Math::Vector App::Math::Quaternion::SetRotation(const Vector& in_vAxis)
 {
     /* QVQ* or QVP-1 */
-    return ((Quaternion(Vector(in_vAxis, 0.0f)) * (*this)) * Inverse() ).m_vAxis;
+    return ((Quaternion(Vector(in_vAxis, 0.0f)) * (*this)) * Inverse()).GetVectorForm();
 }
 
 App::Math::Quaternion App::Math::operator *(const Quaternion& in_qA, const Quaternion& in_qB)
@@ -42,7 +42,7 @@ App::Math::Matrix App::Math::Quaternion::Quaternion2Matrix(void)
     out_mRotationMatrix._m22 = 1.0f - (2.0f * (m_vAxis[complex::i] * m_vAxis[complex::i])) - (2.0f * (m_vAxis[complex::j] * m_vAxis[complex::j]));
     out_mRotationMatrix._m23 = 0.0f;
 
-    out_mRotationMatrix.m_v4rtVector = Vector::Zero();
+    out_mRotationMatrix.m_v4rtVector = Vector();
 
     return out_mRotationMatrix;
 }
@@ -82,6 +82,11 @@ App::Math::Quaternion App::Math::Quaternion::Matrix2Quaternion(Matrix& in_mMatri
 App::Math::Quaternion App::Math::Quaternion::Slerp(const Quaternion & in_qSource, const Quaternion & in_qDest, const float in_fAmount)
 {
     return const_cast<Quaternion&>(in_qSource).Slerp(in_qDest, in_fAmount);
+}
+
+App::Math::Quaternion App::Math::Quaternion::Lerp(const Quaternion& in_qSource, const Quaternion& in_qDest, const float in_fAmount)
+{
+    return const_cast<Quaternion&>(in_qSource).Lerp(in_qDest, in_fAmount);
 }
 
 App::Math::Quaternion App::Math::Quaternion::Slerp(const Quaternion& in_qDest, const float in_fAmount)

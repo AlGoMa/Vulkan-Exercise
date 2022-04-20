@@ -36,7 +36,7 @@ namespace App::Utilities::Gfx
             m_vColor(Vector::Zero()),
             aUVs()
         {
-        };
+        }
 
         Vertex(Vector in_vPos, Vector in_vNorm, Vector in_vColor, float in_fUcoord, float in_fVcoord) :
             m_vPosition(in_vPos),
@@ -44,7 +44,7 @@ namespace App::Utilities::Gfx
             m_vColor(in_vColor)
         {
             memcpy(&aUVs[0], std::vector<float>{ in_fUcoord, in_fVcoord }.data(), sizeof(aUVs));
-        };
+        }
 
         bool operator==(const Vertex& other) const
         {
@@ -87,7 +87,7 @@ namespace App::Utilities::Gfx
     protected:
         Buffer(BufferType in_eBufferType) : m_eType(in_eBufferType) {};
         Buffer(void) = default;
-        virtual ~Buffer(void) = default;
+        virtual ~Buffer(void) {};
 
         struct DescBuffer
         {

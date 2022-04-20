@@ -9,8 +9,13 @@ class Device final:
     public Common::Resources::IResource<Device>
 {
 public:
-    Device(void) : m_pDevice(VK_NULL_HANDLE), m_pPyshicalDev(VK_NULL_HANDLE) {};
-    ~Device(void) = default;
+    Device(void) : m_pDevice(VK_NULL_HANDLE), 
+                   m_pPyshicalDev(VK_NULL_HANDLE), 
+                   m_gpuProperties({0}), 
+                   m_pCommandPool(0), 
+                   m_pPresentQueue(VK_NULL_HANDLE),
+                   m_pGraphicsQueue(VK_NULL_HANDLE) {};
+    virtual ~Device(void) {};
 
     struct FamilyType {
         std::optional<uint32_t> m_uGPFam;

@@ -7,12 +7,12 @@ Application::Application(void)
 }
 
 Application::Application(const char* in_pszAppName,
-    long in_lPosX,
-    long in_lPosY,
-    long in_lWidth,
-    long in_lHeight,
-    bool in_bFullScreen,
-    bool in_bResizable) : m_pInstance(nullptr), m_pParent(nullptr), Common::Resources::IResource<Application>(in_pszAppName)
+                         const long in_lPosX,
+                         const long in_lPosY,
+                         const long in_lWidth,
+                         const long in_lHeight,
+                         const bool in_bFullScreen,
+                         const bool in_bResizable) : m_pInstance(nullptr), m_pParent(nullptr), Common::Resources::IResource<Application>(in_pszAppName)
 {
     m_stAttributes.mAppName = in_pszAppName;
     m_stAttributes.mAttributes.m_stSize.m_lPosX = in_lPosX;
@@ -55,7 +55,7 @@ void Application::Run(const AppBehavior in_eBehavior)
     vDeInitialization();
 }
 
-bool Application::UpdateEvent(uint64_t in_eEvent, const EventState in_eNewState)
+bool Application::UpdateEvent(const t_IntU64 in_eEvent, const EventState in_eNewState)
 {
     bool bResult = false;
 
@@ -75,11 +75,11 @@ void Application::ResetEvents(void)
         });
 }
 
-Application::EventState Application::GetEventStateAndReset(uint16_t in_Event) noexcept
+Application::EventState Application::GetEventState(const t_IntU64 in_unEvent, const bool in_bState) noexcept
 { 
-    EventState eReturn = GetEventState(in_Event);
+    EventState eReturn = m_mEvents.find(in_unEvent)->second;
 
-    UpdateEvent(in_Event, EventState::noactive);
+    UpdateEvent(in_unEvent, in_bState ? EventState::noactive : eReturn);
 
     return eReturn;
 }

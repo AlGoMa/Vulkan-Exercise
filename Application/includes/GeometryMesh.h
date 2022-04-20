@@ -4,15 +4,16 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <Ray.h>
 
 namespace App::Utilities::Gfx
 {
     class GeometryMesh :
-        public Common::Resources::IResource<GeometryMesh>
+        public RayTraicing::Hitable<GeometryMesh>
     {
     public:
-        GeometryMesh(void) = default;
-        virtual ~GeometryMesh(void) = default;
+        GeometryMesh(const Vector in_vPosition = Vector::Zero()) : m_vPosition(in_vPosition) {};
+        virtual ~GeometryMesh(void) {};
 
     public:
         enum class MeshesType : uint8_t
@@ -23,11 +24,13 @@ namespace App::Utilities::Gfx
             Piramid
         };
 
-        virtual bool    LoadObj       (const std::string in_pszFile);
-        virtual void    BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
-                                       Vector in_vPosition = Vector(),
-                                       Vector in_vSize = Vector(1.0f, 1.0f, 1.0f),
-                                       Vector in_vSolidColor = Vector(1.0f, 1.0f, 1.0f));
+        virtual bool           LoadObj        (const std::string in_strFile);
+        virtual void           BuildBasisMesh (GeometryMesh::MeshesType in_eMesh,
+                                               Vector in_vPosition = Vector(),
+                                               Vector in_vSize = Vector(1.0f, 1.0f, 1.0f),
+                                               Vector in_vSolidColor = Vector(1.0f, 1.0f, 1.0f));
+
+        virtual const   stHitRecord Hit           (const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const;
 
         inline auto     GetVertex(void) const { return m_aVertexInfo; }
         inline auto     GetIndex (void) const { return m_aIndexlist; }
@@ -35,8 +38,9 @@ namespace App::Utilities::Gfx
         virtual void    Destroy(void);
 
     protected:
+        Vector                m_vPosition;
         std::vector<Vertex>   m_aVertexInfo;
-        std::vector<uint32_t> m_aIndexlist;
+        std::vector<t_IntU32> m_aIndexlist;
         uint32_t              m_unMeshLOD;
     };
 }

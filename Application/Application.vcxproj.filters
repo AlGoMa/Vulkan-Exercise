@@ -45,6 +45,12 @@
     <ClInclude Include="includes\Camera.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="includes\Ray.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Material.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">

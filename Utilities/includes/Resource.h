@@ -5,51 +5,75 @@
 #include <regex>
 #include <typeinfo>
 
-namespace Common
+namespace Common::Resources
 {
-    namespace Resources
+    static std::string ClassName(const char* in_pszName)
     {
-        static std::string ClassName(const char* in_pszName)
-        {
-            std::smatch out_matches;
-            std::string strInput(in_pszName);
-            std::regex_search(strInput, out_matches, std::regex("(?!.*::)(?!=[\\s]?)([\\w]+)"));
+        std::smatch out_matches;
+        std::string strInput(in_pszName);
+        std::regex_search(strInput, out_matches, std::regex("(?!.*::)(?!=[\\s]?)([\\w]+)((?=\\<?)|(?=\\>))"));
 
-            return out_matches[1];
+        return out_matches[1];
+    }
+
+    struct stKey
+    {
+        t_IntU32     m_ulHashID = 0;
+        std::string  m_strRscName;
+
+        bool operator==(const stKey& in_refOther) const
+        {
+            return in_refOther.m_strRscName == m_strRscName && 
+                   in_refOther.m_ulHashID == m_ulHashID;
+        }
+    };
+    template<typename t>
+    struct Hashable : std::false_type {};
+
+    template<>
+    struct Hashable<stKey> : std::true_type
+    {
+        std::size_t operator()(const stKey& in_rKey) const
+        {
+            return in_rKey.m_ulHashID;
+        }
+    };
+
+    class IComponent
+    {
+    public:
+        IComponent(void) {}
+        virtual ~IComponent(void) {}
+    
+        bool operator ==(const IComponent& in_other) const { return false; }
+    };
+
+    template <typename TClass>
+    class IResource
+    {
+    protected:
+        IResource(void)
+        {
+            m_stResourceIn = stKey{ std::hash<std::string>()(typeid(TClass).name()), ClassName(typeid(this).name()) };
+        }
+        IResource(_In_ _Notnull_ std::string in_strIdentifier)
+        {
+            m_stResourceIn.m_strRscName = in_strIdentifier;
+            m_stResourceIn.m_ulHashID = std::hash<std::string>()(in_strIdentifier);
         }
 
-        template <class TClass>
-        class IResource
-        {
-        protected:
-            typedef struct RESOURCEDATA
-            {
-                t_IntU64     m_ulHashID = 0;
-                std::string  m_strRscName;
-            } stResourceID;
+        virtual                       ~IResource (void) = default;
+        virtual void                  Dispose    (void) {};
+        virtual const std::type_info& GetType    (void) { return typeid(this); }
 
-            IResource(void) 
-            {
-                m_stResourceIn = stResourceID{ std::hash<std::string>()(typeid(IResource).name()), ClassName(typeid(this).name()) };
-            }
+    public:
+        inline const t_IntU32 GetHashID  (void)                      const { return m_stResourceIn.m_ulHashID; }
+        inline const char*    GetName    (void)                      const { return m_stResourceIn.m_strRscName.c_str(); }
+        virtual bool          Equals     (const IResource& in_other) const { return m_stResourceIn == in_other.m_stResourceIn; }
+        bool                  operator ==(const IResource& in_other) const { return Equals(in_other); }
 
-            IResource(_In_ _Notnull_ std::string in_strIdentifier) 
-            {
-                m_stResourceIn.m_strRscName = in_strIdentifier;
-                m_stResourceIn.m_ulHashID = std::hash<std::string>()(in_strIdentifier);
-            }
-
-            virtual ~IResource(void) = default;
-            virtual void                  Dispose(void) { memset(&m_stResourceIn, 0, sizeof(stResourceID)); }
-            virtual bool                  Equals(IResource& object) { return this->GetName() == object.GetName() && this->GetHashID() == object.GetHashID(); }
-            virtual const std::type_info& GetType(void) { return typeid(this); }
-
-        public:
-            inline const t_IntU64 GetHashID (void) const { return m_stResourceIn.m_ulHashID; }
-            inline const char*    GetName(void) const { return m_stResourceIn.m_strRscName.c_str(); }
-
-        private:
-            stResourceID m_stResourceIn;
-        };
-    }
+    private:
+        stKey                 m_stResourceIn;
+    };
 }
+ 

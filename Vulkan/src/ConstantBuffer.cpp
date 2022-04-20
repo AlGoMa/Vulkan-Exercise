@@ -23,7 +23,7 @@ bool ConstantBuffer::CreateDescriptor(void)
     layoutInfo.bindingCount = aUboLayoutBinding.size();
     layoutInfo.pBindings = aUboLayoutBinding.data();
 
-    if (vkCreateDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS)
+    if ((vkCreateDescriptorSetLayout(VulkanInstance->GetDevice()->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS))
     {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
@@ -39,12 +39,12 @@ bool ConstantBuffer::CreateBuffer(const void* in_pData, const uint32_t in_unSize
 
     m_mBufferContainer["Uniform"].resize(VulkanInstance->GetSC()->GetSCImages().size());
     m_mBufferContainer["Scene"].resize(VulkanInstance->GetSC()->GetSCImages().size());
-    
+
     for ( auto& Buffers : m_mBufferContainer["Uniform"])
     {
         bResult |= __super::CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_SHARING_MODE_EXCLUSIVE, Buffers);
     }
-    
+
     VkDeviceSize limits = VulkanInstance->GetDevice()->GetGPUProperties().limits.minUniformBufferOffsetAlignment;
 
     bufferSize = ((sizeof(SceneData) + limits - 1) & ~(limits - 1)) * VulkanInstance->GetSC()->GetSCImages().size();

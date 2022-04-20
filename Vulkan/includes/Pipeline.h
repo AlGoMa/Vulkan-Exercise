@@ -13,7 +13,7 @@ public:
         m_mPipelines.insert(std::make_pair(PipelineType::compute, PipelineData{ VK_NULL_HANDLE, VK_NULL_HANDLE }));
         m_mPipelines.insert(std::make_pair(PipelineType::graphics, PipelineData{VK_NULL_HANDLE, VK_NULL_HANDLE}));
     };
-    ~Pipeline(void) = default;
+    virtual ~Pipeline(void) {};
 
     enum class ShaderType : uint8_t { vertex, fragment, geometry, compute, tessellation_control, tessellation_eval };
     enum class PipelineType : uint8_t { graphics, compute };

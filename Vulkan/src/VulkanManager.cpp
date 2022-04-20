@@ -4,7 +4,7 @@
 bool VulkanManager::CheckValidationLayerSupport(const std::vector<const char*> in_vLayers) {
     bool bResult = false;
 
-    uint32_t u32LayerCount;
+    t_IntU32 u32LayerCount;
     (void)vkEnumerateInstanceLayerProperties(&u32LayerCount, nullptr);
 
     std::vector<VkLayerProperties> vAvailableLayers(u32LayerCount);
@@ -25,7 +25,7 @@ bool VulkanManager::CheckValidationLayerSupport(const std::vector<const char*> i
 
 const std::vector<const char*> VulkanManager::GetExtensions(void)
 {
-    uint32_t glfwExtensionCount = 0;
+    t_IntU32 glfwExtensionCount = 0;
     const char** glfwExtensions;
 
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -62,27 +62,27 @@ VkResult VulkanManager::vkCreateVulkanInstance(const char* in_pszAppName, const 
         vExt.data()
     };
 
-    uint32_t extensionCount = 0;
+    t_IntU32 extensionCount = 0;
     (void)vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
     std::vector<VkExtensionProperties> extensions(extensionCount);
 
     (void)vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-    uint8_t unMatches = 0;
+    t_IntU8 unMatches = 0;
 
     std::for_each(vExt.cbegin(), vExt.cend(),
         [&unMatches, extensions](std::string extension)
         {
-            unMatches += std::end(extensions) != std::find_if(extensions.begin(), extensions.end(),
+            unMatches += static_cast<t_IntU8>(std::end(extensions) != std::find_if(extensions.begin(), extensions.end(),
                 [extension](VkExtensionProperties i)
                 {
                     return extension.compare(i.extensionName) == 0;
-                });
+                }));
         });
 
     if (g_bEnableValidationLayers) {
-        stCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
+        stCreateInfo.enabledLayerCount = static_cast<t_IntU32>(m_validationLayers.size());
         stCreateInfo.ppEnabledLayerNames = m_validationLayers.data();
         stCreateInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&m_sCreateInfo;
     }
@@ -178,7 +178,7 @@ VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const Entity* in
 {
     vkWaitForFences(m_Device.GetDevice(), 1, &m_vInFlightFences[m_unFrame], VK_TRUE, UINT64_MAX);
 
-    uint32_t unImageIndex = 0U;
+    t_IntU32 unImageIndex = 0U;
     VkResult eResult = vkAcquireNextImageKHR(m_Device.GetDevice(), m_SwapChain.GetSwapChain(), UINT64_MAX, m_vImageAvailableSemaphores[m_unFrame], VK_NULL_HANDLE, &unImageIndex);
 
     if ((VK_SUBOPTIMAL_KHR == eResult) || (VK_SUCCESS == eResult)) {
@@ -247,7 +247,7 @@ VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const Entity* in
 
 void VulkanManager::Recreate(const void* in_pWindow)
 {
-    int nWidth = 0, nHeight = 0;
+    t_IntS32 nWidth = 0, nHeight = 0;
 
     while ( (0 == nWidth) || (0 == nHeight)) {
         glfwGetFramebufferSize((GLFWwindow*)in_pWindow, &nWidth, &nHeight);
@@ -278,7 +278,7 @@ void VulkanManager::vDestroy(void)
 {
     m_SwapChain.DestroySwapChain();
 
-    for (size_t i : {0, 1}) {
+    for (t_IntU32 i : {0, 1}) {
         vkDestroySemaphore(m_Device.GetDevice(), m_vRenderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(m_Device.GetDevice(), m_vImageAvailableSemaphores[i], nullptr);
         vkDestroyFence(m_Device.GetDevice(), m_vInFlightFences[i], nullptr);

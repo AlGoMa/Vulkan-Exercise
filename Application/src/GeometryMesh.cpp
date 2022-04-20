@@ -48,7 +48,6 @@ void  GeometryMesh::BuildBasisMesh(GeometryMesh::MeshesType in_eMesh,
         m_aVertexInfo[1].m_vNormals = Vector::Cross(V, U);
         Vector::Normalize(m_aVertexInfo[1].m_vNormals);
 
-
         V = m_aVertexInfo[0].m_vPosition - m_aVertexInfo[2].m_vPosition;
         U = m_aVertexInfo[1].m_vPosition - m_aVertexInfo[2].m_vPosition;
 
@@ -199,6 +198,43 @@ bool GeometryMesh::LoadObj(std::string in_pszFile)
     streamMesh.close();
 
     return true;
+}
+
+const App::Math::RayTraicing::Hitable<GeometryMesh>::stHitRecord GeometryMesh::Hit(const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const
+{
+    stHitRecord out_stHitInfo {0};
+    Vector vOriginCtr = (in_rRay.Origin() - m_vPosition);
+                                      
+    float fBB  = Vector::Dot(in_rRay.Direction(), in_rRay.Direction());
+    float fBAC = 2.0f * Vector::Dot(in_rRay.Direction(), vOriginCtr);
+    float fAC = Vector::Magnitude(vOriginCtr) - (1.5f * 1.5f);
+    float fDiscriminant = fBB * fBB - fAC * fBAC;
+
+    if (fDiscriminant > 0.0f)
+    {
+        float fFront = (-fBAC - sqrt(fDiscriminant)) / fBB;
+
+        if (in_fMin < fFront && in_fMax > fFront)
+        {
+            out_stHitInfo.m_isHitted = true;
+            out_stHitInfo.m_fDelta = fFront;
+        }
+        else
+        {
+            float fBack = (-fBAC + sqrt(fDiscriminant)) / fBB;
+
+            if (in_fMin < fBack && in_fMax > fBack)
+            {
+                out_stHitInfo.m_isHitted = true;
+                out_stHitInfo.m_fDelta = fBack;
+            }
+        }
+
+        out_stHitInfo.m_vPoint = const_cast<RayTraicing::Ray&>(in_rRay).PointAtParam(out_stHitInfo.m_fDelta);
+        out_stHitInfo.m_vNormal = (out_stHitInfo.m_vPoint - m_vPosition) / 1.0f;
+    }
+
+    return out_stHitInfo;
 }
 
 void GeometryMesh::Destroy(void)

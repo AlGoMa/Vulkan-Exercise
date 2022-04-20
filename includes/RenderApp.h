@@ -23,6 +23,11 @@ public:
 
     enum class Events : uint64_t { Resize, Moving, MouseClick, MouseHover, KeyEscPressed };
 
+    inline const t_IntS64& Width      (void) { return GetAppDimentions().m_lWidth; }
+    inline const t_IntS64& Height     (void) { return GetAppDimentions().m_lHeight; }
+    inline const Point     Dimentions (void) { return GetAppDimentions().m_stSize; }
+    inline const Point     Position   (void) { return GetAppDimentions().m_stPosition; }
+
 private:
     virtual void                                         vInitialization(void);
     virtual void                                         vDeInitialization(void);

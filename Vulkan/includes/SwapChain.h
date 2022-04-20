@@ -13,7 +13,7 @@ class SwapChain :
 public:
     SwapChain(void) { m_pConstantBuffer = std::make_unique<ConstantBuffer>();  m_pStorageBuffer = std::make_unique<StorageBuffer>();
     };
-    ~SwapChain(void) = default;
+    virtual ~SwapChain(void) {};
 
     struct SCSupportDetails {
         VkSurfaceCapabilitiesKHR        capabilities;

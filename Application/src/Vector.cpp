@@ -14,7 +14,7 @@ __m128 __mm_select_xor_ps(const __m128 in_vecA, const __m128 in_vecB, const __m1
     return _mm_xor_ps(in_vecA, _mm_and_ps(_mm_xor_ps(in_vecA, in_vecB), in_mask));
 }
 
-App::Math::Vector::Vector(float in_X, float in_Y, float in_Z, float in_W)
+App::Math::Vector::Vector(const float in_X, const float in_Y, const float in_Z, const float in_W)
 {
     X = in_X;
     Y = in_Y;
@@ -30,9 +30,13 @@ App::Math::Vector::Vector(const Vector& in_vVector, float in_W)
     W = in_W;
 }
 
-App::Math::Vector App::Math::Vector::Normalize(const Vector& out_vVector)
+App::Math::Vector App::Math::Vector::Normalize(const Vector& in_vVector)
 {
-    return const_cast<Vector*>(&out_vVector)->Normalize();
+    float fDen = SqrMagnitude(in_vVector);
+
+    float fVecMagnitude = fDen != 0.0f ? 1.0f / fDen : 0.0f;
+
+    return const_cast<Vector&>(in_vVector) *= fVecMagnitude;
 }
 
 float App::Math::Vector::SqrMagnitude(const Vector& in_vVector)
@@ -60,9 +64,11 @@ App::Math::Vector App::Math::Vector::MulS(const Vector& out_vVector, float in_fS
     return static_cast<Vector>(out_vVector) *= in_fScalar;
 }
 
-App::Math::Vector App::Math::Vector::Cross(const App::Math::Vector& in_vFirstVector, const App::Math::Vector& in_vSecondVector)
+App::Math::Vector App::Math::Vector::Cross(const App::Math::Vector& in_vA, const App::Math::Vector& in_vB)
 {
-    return const_cast<Vector*>(&in_vFirstVector)->Cross(in_vSecondVector);
+    return Vector((in_vA.Y * in_vB.Z) - (in_vA.Z * in_vB.Y),
+                  (in_vA.Z * in_vB.X) - (in_vA.X * in_vB.Z),
+                  (in_vA.X * in_vB.Y) - (in_vA.Y * in_vB.X), 0.0f);
 }
 
 float App::Math::Vector::DotMagnitude(const Vector& in_vA, const Vector& in_vB)
@@ -77,6 +83,11 @@ float App::Math::Vector::CrossMagnitude(const Vector& in_vA, const Vector& in_vB
     return sinf(Dot(out_vRes, out_vRes));
 }
 
+App::Math::Vector  App::Math::Vector::Reflect(const Vector& in_vA, const Vector& in_vB)
+{
+    return static_cast<Vector>(in_vA).Reflect(in_vB);
+}
+
 App::Math::Vector App::Math::operator *(const Vector& in_vA, const Vector& in_vB)
 {
     return static_cast<Vector>(in_vA) *= in_vB;
@@ -85,6 +96,21 @@ App::Math::Vector App::Math::operator *(const Vector& in_vA, const Vector& in_vB
 App::Math::Vector App::Math::operator +(const Vector& in_vA, const Vector& in_vB)
 {
     return static_cast<Vector>(in_vA) += in_vB;
+}
+
+App::Math::Vector App::Math::operator /(const Vector& in_vA, const Vector& in_vB)
+{
+    return static_cast<Vector>(in_vA) /= in_vB;
+}
+
+bool App::Math::operator == (const Vector& in_vA, const Vector& in_vB)
+{
+    return memcmp(in_vA.a, in_vB.a, 4) == 0;
+}
+
+App::Math::Vector App::Math::operator - (const Vector& in_vA, const Vector& in_vB)
+{
+    return static_cast<Vector>(in_vA) -= in_vB;
 }
 
 App::Math::Vector App::Math::operator *(const Vector& in_vA, const float in_fScalar)
@@ -102,36 +128,45 @@ App::Math::Vector App::Math::operator -(const Vector& in_vA, const float in_fSca
     return static_cast<Vector>(in_vA) -= in_fScalar;
 }
 
-App::Math::Vector App::Math::operator - (const Vector& in_vA, const Vector& in_vB)
-{
-    return static_cast<Vector>(in_vA) -= in_vB;
-}
-
 App::Math::Vector App::Math::operator / (const Vector& in_vA, const float in_fScalar)
 {
     return static_cast<Vector>(in_vA) /= in_fScalar;
 }
 
-bool App::Math::operator == (const Vector& in_vA, const Vector& in_vB)
+App::Math::Vector App::Math::operator *(const float in_fScalar, const Vector& in_vA)
 {
-    return memcmp(in_vA.a, in_vB.a, 4) == 0;
+    return static_cast<Vector>(in_vA) *= in_fScalar;
+}
+
+App::Math::Vector App::Math::operator +(const float in_fScalar, const Vector& in_vA)
+{
+    return static_cast<Vector>(in_vA) += in_fScalar;
+}
+
+App::Math::Vector App::Math::operator -(const float in_fScalar, const Vector& in_vA)
+{
+    return static_cast<Vector>(in_vA) -= in_fScalar;
+}
+
+App::Math::Vector App::Math::operator / (const float in_fScalar, const Vector& in_vA)
+{
+    return static_cast<Vector>(in_vA) /= in_fScalar;
 }
 
 /* Non-static functions. */
+float App::Math::Vector::Magnitude(void)
+{
+    return Magnitude(*this);
+}
+
 App::Math::Vector App::Math::Vector::Normalize(void)
 {
-    float fDen = SqrMagnitude(*this);
-
-    float fVecMagnitude = fDen != 0.0f ? 1.0f / fDen : 0.0f;
-
-    return *this *= fVecMagnitude;
+    return Normalize(*this);
 }
 
 App::Math::Vector App::Math::Vector::Cross(const Vector& in_vB)
 {
-    return Vector((Y * in_vB.Z) - (Z * in_vB.Y),
-                  (Z * in_vB.X) - (X * in_vB.Z),
-                  (X * in_vB.Y) - (Y * in_vB.X), 0.0f);
+    return Cross(*this, in_vB);
 }
 
 float App::Math::Vector::Dot(const Vector& in_vB)
@@ -141,17 +176,20 @@ float App::Math::Vector::Dot(const Vector& in_vB)
 
 float App::Math::Vector::DotMagnitude(const Vector& in_vB)
 {
-    return cosf(Dot(Normalize(*this), Normalize(in_vB)));
+    return DotMagnitude(*this, in_vB);
 }
 
 float App::Math::Vector::CrossMagnitude(const Vector& in_vB)
 {
-    Vector out_vRes = Cross(*this, in_vB);
-
-    return sinf(Dot(out_vRes, out_vRes));
+    return CrossMagnitude(*this, in_vB);
 }
 
 float App::Math::Vector::SqrMagnitude(void)
 {
-    return rsqrt(Dot(*this, *this));
+    return SqrMagnitude(*this);
+}
+
+App::Math::Vector App::Math::Vector::Reflect(const Vector& in_vB)
+{
+    return *this - 2.0f * Dot(*this, in_vB) * in_vB;
 }

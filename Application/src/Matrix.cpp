@@ -40,9 +40,9 @@ unsigned int App::Math::Matrix::Determinant(void)
 App::Math::Matrix App::Math::Matrix::Transpose(Matrix& out_mMatrix)
 {
     return out_mMatrix = Matrix(Vector(out_mMatrix[0], out_mMatrix[4], out_mMatrix[8],  out_mMatrix[12]),
-                                Vector(out_mMatrix[1], out_mMatrix[5], out_mMatrix[9],  out_mMatrix[13]),
-                                Vector(out_mMatrix[2], out_mMatrix[6], out_mMatrix[10], out_mMatrix[14]),
-                                Vector(out_mMatrix[3], out_mMatrix[7], out_mMatrix[11], out_mMatrix[15]));
+                  Vector(out_mMatrix[1], out_mMatrix[5], out_mMatrix[9],  out_mMatrix[13]),
+                  Vector(out_mMatrix[2], out_mMatrix[6], out_mMatrix[10], out_mMatrix[14]),
+                  Vector(out_mMatrix[3], out_mMatrix[7], out_mMatrix[11], out_mMatrix[15]));
 }
 
 float App::Math::Matrix::Trace(Matrix& in_mMatrix)
@@ -95,7 +95,7 @@ void App::Math::Matrix::FrustrumPlanes(Matrix& in_mProjMatrix, Matrix& in_mViewM
 
 App::Math::Matrix App::Math::Matrix::PerspectiveMatrix(const float in_fFOV, const float in_fAspectRatio, const float in_fNear, const float in_fFar)
 {
-    Matrix out_mProjectivMatrix = Identity();
+    Matrix out_mProjectivMatrix = mIdentity;
 
     out_mProjectivMatrix._m00 = 1.0f / tanf(in_fAspectRatio * 0.5f);
     out_mProjectivMatrix._m11 = 1.0f / tanf(in_fFOV * 0.5f);

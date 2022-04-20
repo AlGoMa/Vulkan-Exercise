@@ -27,7 +27,11 @@ void  RenderApp::vInitialization(void)
 
     App::Managers::Application::stAppDimentions sCachedSize = GetAppDimentions();
 
-    m_pInstance = glfwCreateWindow(sCachedSize.m_lWidth, sCachedSize.m_lHeight, GetAppName(), nullptr, nullptr);
+    m_pInstance = glfwCreateWindow(reinterpret_cast<t_IntS32&>(sCachedSize.m_lWidth), 
+                                   reinterpret_cast<t_IntS32&>(sCachedSize.m_lHeight), 
+                                   GetAppName(), 
+                                   nullptr, 
+                                   nullptr);
 
     if (!GetWndInstance<GLFWwindow>())
     {
@@ -96,7 +100,7 @@ void  RenderApp::vDeInitialization(void)
 void  RenderApp::Draw(void)
 {
     VulkanInstance->vkDraw(m_pInstance, m_pEntity.get(),
-                     EventState::active == GetEventStateAndReset(static_cast<uint64_t>(Events::Resize)));
+                     EventState::active == GetEventState(static_cast<t_IntU64>(Events::Resize)));
 }
 
 void  RenderApp::LoadContent(void)
@@ -112,7 +116,7 @@ void  RenderApp::ProcessInput(void)
     GetAppDimentions().m_lWidth = VulkanInstance->GetSC()->GetExtents().width;
     GetAppDimentions().m_lHeight = VulkanInstance->GetSC()->GetExtents().height;
 
-    if (GetEventState(static_cast<uint32_t>(Events::MouseHover)) == EventState::active)
+    if (GetEventState(static_cast<uint32_t>(Events::MouseHover), false) == EventState::active)
     {
         double xpos = 0.0, ypos = 0.0;
         
@@ -122,7 +126,7 @@ void  RenderApp::ProcessInput(void)
         m_vMousePos.y = static_cast<float>(ypos) / GetAppDimentions().m_lHeight;
     }
 
-    if (GetEventState(static_cast<uint32_t>(Events::KeyEscPressed)) == EventState::active)
+    if (GetEventState(static_cast<uint32_t>(Events::KeyEscPressed), false) == EventState::active)
     {
         glfwSetWindowShouldClose(GetWndInstance<GLFWwindow>(), GLFW_TRUE);
     }

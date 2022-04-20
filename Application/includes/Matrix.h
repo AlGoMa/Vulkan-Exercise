@@ -5,7 +5,7 @@
 
 namespace App::Math {
 
-    class Matrix final 
+    class Matrix final
     {
     public:
         enum class RotateAxis : uint8_t { X_AXIS, Y_AXIS, Z_AXIS };
@@ -37,21 +37,23 @@ namespace App::Math {
         };
 
     public:
-        Matrix(const Vector in_vA, const Vector in_vB, const Vector in_vC, const Vector in_vD);
-        Matrix(const std::array<float, 16> in_data) { memcpy( &m_arrMatrix[0], in_data.data(), 64); }
-        Matrix(void);
-        Matrix(const bool in_bIdentity);
+        Matrix (const Vector in_vA, const Vector in_vB, const Vector in_vC, const Vector in_vD);
+        Matrix (const bool in_bIdentity);
+        Matrix (void);
         ~Matrix(void) = default;
 
         typedef struct { t_IntU8 mX, mY; } point;
 
-        inline float& operator [](const t_IntU8 in_unXY) noexcept { return m_arrMatrix[in_unXY / 4][in_unXY % 4]; }
-        inline float& operator [](const point   in_sXY)  noexcept { return m_arrMatrix[in_sXY.mY][in_sXY.mX]; }
+        inline float&       operator [](const t_IntU8 in_unXY) noexcept       { return m_arrMatrix[in_unXY / 4][in_unXY % 4]; }
+        inline float&       operator [](const point   in_sXY)  noexcept       { return m_arrMatrix[in_sXY.mY][in_sXY.mX]; }
+        inline const float& operator [](const t_IntU8 in_unXY) const noexcept { return m_arrMatrix[in_unXY / 4][in_unXY % 4]; }
+        inline const float& operator [](const point   in_sXY)  const noexcept { return m_arrMatrix[in_sXY.mY][in_sXY.mX]; }
+        
         unsigned      int    Determinant (void);
         inline        Matrix Transpose   (void) { return Transpose(*this); }
         inline        float  Trace       (void) const { return m_v1stVector.x() + m_v2ndVector.y() + m_v3rdVector.z() + m_v4rtVector.w(); }
-        inline static Matrix Identity    (void) { return Matrix(Vector::Right(), Vector::Up(), Vector::Forward(), Vector(Vector(0.0f), 1.0f)); }
         
+        inline static Matrix Identity    (void) { return Matrix(Vector::Right(), Vector::Up(), Vector::Forward(), Vector(Vector(0.0f), 1.0f)); }
         static Matrix Transpose          (Matrix& out_mMatrix);
         static float  Trace              (Matrix& in_mMatrix);
         static void   FrustrumPlanes     (Matrix& in_mProjMatrix, Matrix& in_mViewMatrix, Vector* out_pPlanes);
@@ -67,6 +69,11 @@ namespace App::Math {
         static Matrix PerspectiveMatrix  (const float in_fFOV, const float in_fAspectRatio, const float in_fNear, const float in_fFar);
         static Matrix OrtthographicMatrix(float in_fLPlane, float in_fRPlane, float in_fTopPlane, float in_fBottomPlane, float in_fNear, float in_fFar);
         static Matrix LookAtMatrix       (Vector in_vPosition, Vector in_vTarget, Vector in_vUpVector);
+
+        __declspec(noinline) const Vector& Vec1(void) const { return m_v1stVector; }
+        __declspec(noinline) const Vector& Vec2(void) const { return m_v2ndVector; }
+        __declspec(noinline) const Vector& Vec3(void) const { return m_v3rdVector; }
+        __declspec(noinline) const Vector& Vec4(void) const { return m_v4rtVector; }
 
         friend Matrix operator *(Matrix& in_mA, Matrix& in_mB);
         friend Vector operator *(Matrix& in_mMatrix, Vector& in_vVector);

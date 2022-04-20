@@ -19,8 +19,14 @@ namespace App
         {
         public:
             typedef enum class AppBehavior : bool { Asynchronus = 0, Synchronus } AppBehavior;
-            typedef enum class AppStatus : uint8_t { Running = 0, Exit, Halted } AppStatus;
-            typedef enum class EventState : uint8_t { noactive, active, unknown } EventState;
+            typedef enum class AppStatus : t_IntU8 { Running = 0, Exit, Halted } AppStatus;
+            typedef enum class EventState : t_IntU8 { noactive, active, unknown } EventState;
+
+            typedef struct stPoint
+            {
+                t_IntU64 _x;
+                t_IntU64 _y;
+            } Point;
 
             /* Application Size:
             X Position,
@@ -30,10 +36,22 @@ namespace App
             */
             typedef struct stAppDimentions
             {
-                long m_lPosX;
-                long m_lPosY;
-                long m_lWidth;
-                long m_lHeight;
+                union
+                {
+                    struct
+                    {
+                        t_IntS64 m_lPosX;
+                        t_IntS64 m_lPosY;
+                        t_IntS64 m_lWidth;
+                        t_IntS64 m_lHeight;
+                    };
+                    struct 
+                    {
+                        Point m_stPosition;
+                        Point m_stSize;
+                    };
+                };
+
             } AppDimentions;
 
             typedef struct stAppAttributes
@@ -73,27 +91,26 @@ namespace App
             virtual void                ProcessInput          (void) = 0;
             virtual const AppStatus     Update                (void) = 0;
                                                               
-            bool                        UpdateEvent           (uint64_t in_eEvent, const EventState in_eNewState);
+            bool                        UpdateEvent           (const t_IntU64 in_eEvent, const EventState in_eNewState);
             void                        ResetEvents           (void);
-            EventState                  GetEventStateAndReset (uint16_t in_Event) noexcept;
+            EventState                  GetEventState         (const t_IntU64 in_Event, const bool in_bReset = true) noexcept;
 
             virtual inline void         SetParent             (const Application* in_pParent = nullptr) { m_pParent = const_cast<Application*>(in_pParent); }
-            inline void                 AttachEvent           (uint64_t in_eEvent) noexcept { m_mEvents.insert ( std::make_pair(in_eEvent, EventState::noactive)); }
-            inline       Application*   GetParent             (void) const { return m_pParent; }
-            inline const char*          GetAppName            (void) const { return GetName(); }
-            inline const t_IntU64&      GetID                 (void) const { return GetHashID(); }
-            inline const bool&          ResizableState        (void) const { return m_stAttributes.mAttributes.m_bResizable; }
-            inline const bool&          FullScreenState       (void) const { return m_stAttributes.mAttributes.m_bFullScreen; }
-            inline       AppDimentions& GetAppDimentions      (void)       { return m_stAttributes.mAttributes.m_stSize; }
+            inline void                 AttachEvent           (const t_IntU64 in_unEvent) noexcept { m_mEvents.insert ( std::make_pair(in_unEvent, EventState::noactive)); }
+            inline       Application*   GetParent             (void) const                   { return m_pParent; }
+            inline const char*          GetAppName            (void) const                   { return GetName(); }
+            inline const t_IntU64&      GetID                 (void) const                   { return GetHashID(); }
+            inline const bool&          ResizableState        (void) const                   { return m_stAttributes.mAttributes.m_bResizable; }
+            inline const bool&          FullScreenState       (void) const                   { return m_stAttributes.mAttributes.m_bFullScreen; }
+            inline       AppDimentions& GetAppDimentions      (void)                         { return m_stAttributes.mAttributes.m_stSize; }
             template<typename tclass>
-            inline       tclass*        GetWndInstance        (void) const { return static_cast<tclass*>(m_pInstance); }
-            inline const EventState     GetEventState         (uint16_t in_Event) noexcept { return m_mEvents.find(in_Event)->second; }
+            inline       tclass*        GetWndInstance        (void) const { return reinterpret_cast<tclass*>(m_pInstance); }
             
             void*                          m_pInstance;
         private:
             Application*                   m_pParent;
             stAppDescriptor                m_stAttributes;
-            std::map<uint64_t, EventState> m_mEvents;
+            std::map<t_IntU64, EventState> m_mEvents;
         };
     }
 }
