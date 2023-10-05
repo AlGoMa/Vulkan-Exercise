@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)include</IncludePath>
+    <IncludePath>$(ProjectDir)includes</IncludePath>
     <SourcePath>$(ProjectDir)src</SourcePath>
     <OutDir>$(SolutionDir)Libs\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(Platform)\$(SolutionName)\$(Configuration)\</IntDir>
@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ColorRGBA.h" />
     <ClInclude Include="includes\Application.h" />
     <ClInclude Include="includes\BaseManager.h" />
     <ClInclude Include="includes\Buffer.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="includes\Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorRGBA.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\Camera.cpp" />

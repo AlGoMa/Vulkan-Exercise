@@ -23,12 +23,12 @@ namespace App::Math::RayTraicing
 
     template <typename TObject>
     requires (std::is_class<TObject>::value)
-    class Hitable :
+    class Hittable :
         public Common::Resources::IResource<TObject>
     {
     public:
-        Hitable(void) {}
-        virtual ~Hitable(void) {};
+        Hittable(void) {}
+        virtual ~Hittable(void) {};
 
         typedef struct HITRECORD
         {

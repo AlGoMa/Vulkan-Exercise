@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include "../../Application/ColorRGBA.h"
 using namespace App::Math;
 
 struct UniformData
@@ -18,20 +19,20 @@ struct UniformData
 
 struct SceneData
 {
-    alignas(16) glm::vec4 sky; 
-    alignas(16) glm::vec4 ambientColor;
-    alignas(16) glm::vec4 lightColor;
-    alignas(16) glm::vec4 astroMidColor;
-    alignas(16) glm::vec4 astroOutColor;
-    alignas(16) glm::vec4 waveColor;
-    alignas(16) glm::vec4 MousePosition;
+    alignas(16) ColorRGBA sky; 
+    alignas(16) ColorRGBA ambientColor;
+    alignas(16) ColorRGBA lightColor;
+    alignas(16) ColorRGBA astroMidColor;
+    alignas(16) ColorRGBA astroOutColor;
+    alignas(16) ColorRGBA waveColor;
+    alignas(16) Vector MousePosition;
 };
 
 class ConstantBuffer :
     public VulkanBuffer
 {
 public:
-    ConstantBuffer(void) : VulkanBuffer(VulkanBuffer::BufferType::constant) {
+    ConstantBuffer(void) : VulkanBuffer(VulkanBuffer::BufferType::constant), m_DescriptorSetLayout(), m_tUniformData() {
         m_mBufferContainer.insert(std::make_pair("Uniform", std::vector<Buffer::DescBuffer>{}));
         m_mBufferContainer.insert(std::make_pair("Scene", std::vector<Buffer::DescBuffer>{}));
     };

@@ -12,7 +12,7 @@ namespace App::SingletonPattern
     {
     protected:
         Singleton(void) = default;
-        virtual ~Singleton(void) {};
+        ~Singleton(void) override {}
 
     public:
         static TClass*  GetInstance (void) { return nullptr == sm_pInstance ? sm_pInstance = new TClass() : sm_pInstance; }

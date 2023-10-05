@@ -6,12 +6,12 @@
 #include <array>
 #include <cstddef>
 
-class Entity : 
+class RenderEntity : 
     public App::Utilities::Gfx::GeometryMesh
 {
 public:
-    Entity(void) = default;
-    ~Entity(void) = default;
+    RenderEntity(void) = default;
+    ~RenderEntity(void) = default;
 
     inline VulkanBuffer* GetBuffer (VulkanBuffer::BufferType in_eType) { return m_mBuffers.find(in_eType)->second; }
     bool                 AddBuffer (VulkanBuffer* in_pBuffer);

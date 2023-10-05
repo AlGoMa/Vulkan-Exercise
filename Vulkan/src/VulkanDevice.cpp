@@ -1,8 +1,8 @@
-#include "Device.h"
-#include <set>
+#include "VulkanDevice.h"
 #include "VulkanManager.h"
+#include <set>
 
-VkResult Device::CreateLogicalDevice(const std::vector<const char*> in_vDevExtensions,
+VkResult VulkanDevice::CreateLogicalDevice(const std::vector<const char*> in_vDevExtensions,
                                      const std::vector<const char*> in_vValidationLayers)
 {
     m_vCachedDeviceExt = in_vDevExtensions;
@@ -43,7 +43,7 @@ VkResult Device::CreateLogicalDevice(const std::vector<const char*> in_vDevExten
     return static_cast<VkResult>(vkCreateDevice(m_pPyshicalDev, &stCreateInfo, nullptr, &m_pDevice) | CreateDeviceQueues());
 }
 
-VkResult Device::CreateCommandPool(void)
+VkResult VulkanDevice::CreateCommandPool(void)
 {
     VkCommandPoolCreateInfo stPoolInfo{};
     stPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -53,7 +53,7 @@ VkResult Device::CreateCommandPool(void)
     return vkCreateCommandPool(m_pDevice, &stPoolInfo, nullptr, &m_pCommandPool);
 }
 
-VkResult Device::CreateDeviceQueues(void)
+VkResult VulkanDevice::CreateDeviceQueues(void)
 {
     try
     {
@@ -71,7 +71,7 @@ VkResult Device::CreateDeviceQueues(void)
     }
 }
 
-Device::FamilyType Device::SelectPhysicalDevice(void) 
+VulkanDevice::FamilyType VulkanDevice::SelectPhysicalDevice(void) 
 {
     FamilyType out_sFam { };
 
@@ -96,7 +96,7 @@ Device::FamilyType Device::SelectPhysicalDevice(void)
     return out_sFam;
 }
 
-bool Device::QueryFamily(const VkPhysicalDevice in_Device, FamilyType& out_vFamily)
+bool VulkanDevice::QueryFamily(const VkPhysicalDevice in_Device, FamilyType& out_vFamily)
 {
     uint32_t unQueueFamilyCount = 0, 
              unIndex = 0;
@@ -120,7 +120,7 @@ bool Device::QueryFamily(const VkPhysicalDevice in_Device, FamilyType& out_vFami
         });
 }
 
-bool Device::CheckDeviceExtensionSupport(const VkPhysicalDevice in_Device) {
+bool VulkanDevice::CheckDeviceExtensionSupport(const VkPhysicalDevice in_Device) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(in_Device, nullptr, &extensionCount, nullptr);
 
@@ -136,7 +136,7 @@ bool Device::CheckDeviceExtensionSupport(const VkPhysicalDevice in_Device) {
     return seRequiredExtensions.empty();
 }
 
-void Device::Destroy(void)
+void VulkanDevice::Destroy(void)
 {
     vkDestroyCommandPool(m_pDevice, m_pCommandPool, nullptr);
 

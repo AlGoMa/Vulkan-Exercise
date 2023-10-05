@@ -5,7 +5,7 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <chrono>
-#define BARYCOORD(x0,x1,x2,p) (p < 0.5) ? ((x1 * p * 2.0) + x0 * (0.5 - p) * 2.0) : (x2 * (p - 0.5) * 2.0 + x1 * (1.0 - p) * 2.0)
+#define BARYCOORD(x0,x1,x2,p) (p < .5f) ? ((x1 * p * 2.f) + x0 * (.5f - p) * 2.f) : (x2 * (p - .5f) * 2.f + x1 * (1.f - p) * 2.f)
 #define NORMCOLOR(x) ((x) * 0.004)
 #include "VulkanManager.h"
 
@@ -55,28 +55,25 @@ void  RenderApp::vInitialization(void)
 
     glfwSetKeyCallback(GetWndInstance<GLFWwindow>(), 
                        [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-                           auto app = reinterpret_cast<RenderApp*>(glfwGetWindowUserPointer(window));
+                           const auto app = static_cast<RenderApp*>(glfwGetWindowUserPointer(window));
                            app->UpdateEvent(static_cast<uint64_t>(Events::KeyEscPressed), static_cast<EventState>(GLFW_KEY_ESCAPE == key));
                        });
 
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(GetWndInstance<GLFWwindow>(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-    /*
-    * Vulkan instantiation. Where the magic begins.
-    */
     if (VK_SUCCESS != VulkanInstance->vkCreateVulkanInstance(GetAppName(), m_pInstance))
     {
         throw std::runtime_error("failed to create Vulkan Environment!");
     }
 
-    m_pEntity.get()->AddBuffer(new VertexBuffer());
-    m_pEntity.get()->AddBuffer(new IndexBuffer());
+    m_pEntity->AddBuffer(new VertexBuffer());
+    m_pEntity->AddBuffer(new IndexBuffer());
 
-    VulkanInstance->GetPipeline()->CreateShader("Shaders/frag.spv",    "main", Pipeline::ShaderType::fragment);
-    VulkanInstance->GetPipeline()->CreateShader("Shaders/vert.spv",    "main", Pipeline::ShaderType::vertex);
-    /* ToDo: Syncronization issues. */
-    VulkanInstance->GetPipeline()->CreateShader("Shaders/compute.spv", "main", Pipeline::ShaderType::compute);
+    VulkanInstance->GetPipeline()->CreateShader("Shaders/frag.spv",    "main", VukanPipeline::ShaderType::fragment);
+    VulkanInstance->GetPipeline()->CreateShader("Shaders/vert.spv",    "main", VukanPipeline::ShaderType::vertex);
+    /* ToDo: Synchronization issues. */
+    VulkanInstance->GetPipeline()->CreateShader("Shaders/compute.spv", "main", VukanPipeline::ShaderType::compute);
 
     VulkanInstance->GetPipeline()->CreateGraphicsPipeline();
     VulkanInstance->GetPipeline()->CreateComputePipeline();
@@ -105,7 +102,7 @@ void  RenderApp::Draw(void)
 
 void  RenderApp::LoadContent(void)
 {
-    m_pEntity = std::make_unique<Entity>();
+    m_pEntity = std::make_unique<RenderEntity>();
 
     m_pEntity.get()->BuildBasisMesh(GeometryMesh::MeshesType::Plane);
     //m_pEntity.get()->LoadObj("Meshes/Cats_obj.obj");
@@ -154,23 +151,23 @@ const App::Managers::Application::AppStatus RenderApp::Update(void)
 
     SceneData SData;
 
-    SData.sky        = glm::vec4(NORMCOLOR(BARYCOORD(182.0, 207.0, 23.0, m_vMousePos.y)),
-                                 NORMCOLOR(BARYCOORD(218.0, 122.0, 11.0, m_vMousePos.y)),
-                                 NORMCOLOR(BARYCOORD(228.0, 80.0,  40.0,  m_vMousePos.y)), 1.0f);
-    SData.lightColor = glm::vec4(NORMCOLOR(BARYCOORD(179.0, 238.0, 46.0, m_vMousePos.y)),
-                                 NORMCOLOR(BARYCOORD(174.0, 212.0, 21.0, m_vMousePos.y)),
-                                 NORMCOLOR(BARYCOORD(234.0, 171.0, 56.0, m_vMousePos.y)), 1.0f);
+    SData.sky        = ColorRGBA(BARYCOORD(182.0f, 207.0f, 23.0f, m_vMousePos.y),
+                                 BARYCOORD(218.0f, 122.0f, 11.0f, m_vMousePos.y),
+                                 BARYCOORD(228.0f, 80.0f,  40.0f, m_vMousePos.y)).Normalized();
+    SData.lightColor = ColorRGBA(BARYCOORD(179.0f, 238.0f, 46.0f, m_vMousePos.y),
+                                 BARYCOORD(174.0f, 212.0f, 21.0f, m_vMousePos.y),
+                                 BARYCOORD(234.0f, 171.0f, 56.0f, m_vMousePos.y)).Normalized();
 
-    SData.astroOutColor = glm::vec4(NORMCOLOR(BARYCOORD(216.0, 205.0, 243.0, m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(186.0, 100.0, 198.0, m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(122.0, 65.0,  238.0, m_vMousePos.y)), 1.0f);
-    SData.astroMidColor = glm::vec4(NORMCOLOR(BARYCOORD(250.0, 243.0, 255.0, m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(247.0, 168.0, 255.0, m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(180.0, 112.0, 255.0, m_vMousePos.y)), 1.0f);
-    SData.waveColor     = glm::vec4(NORMCOLOR(BARYCOORD(146.0, 216.0, 59.0,  m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(216.0, 161.0, 88.0,  m_vMousePos.y)),
-                                    NORMCOLOR(BARYCOORD(203.0, 117.0, 113.0, m_vMousePos.y)), 1.0f);
-    SData.MousePosition = m_vMousePos;
+    SData.astroOutColor = ColorRGBA(BARYCOORD(216.0f, 205.0f, 243.0f, m_vMousePos.y),
+                                    BARYCOORD(186.0f, 100.0f, 198.0f, m_vMousePos.y),
+                                    BARYCOORD(122.0f, 65.0f,  238.0f, m_vMousePos.y)).Normalized();
+    SData.astroMidColor = ColorRGBA(BARYCOORD(250.0f, 243.0f, 255.0f, m_vMousePos.y),
+                                    BARYCOORD(247.0f, 168.0f, 255.0f, m_vMousePos.y),
+                                    BARYCOORD(180.0f, 112.0f, 255.0f, m_vMousePos.y)).Normalized();
+    SData.waveColor     = ColorRGBA(BARYCOORD(146.0f, 216.0f, 59.0f,  m_vMousePos.y),
+                                    BARYCOORD(216.0f, 161.0f, 88.0f,  m_vMousePos.y),
+                                    BARYCOORD(203.0f, 117.0f, 113.0f, m_vMousePos.y)).Normalized();
+    SData.MousePosition = Vector(m_vMousePos.x, m_vMousePos.y, 0.f);
     
     VulkanInstance->GetSC()->GetCB()->GetSceneData() = SData;
 

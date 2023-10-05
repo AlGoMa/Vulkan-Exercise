@@ -115,7 +115,7 @@ namespace App::FiniteStateMachine
             }
         }
 
-        virtual Response  OnUpdate(_In_ _Const_ _Notnull_ const Event* in_pMessage);
+        virtual Response  OnUpdate(_In_ _Const_ _Notnull_ const Event* in_pMessage) { return Response::_NoReceived; }
         virtual void      OnInit(void) = 0;
         virtual void      OnExit(void) = 0;
 

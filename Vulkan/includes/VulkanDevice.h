@@ -5,17 +5,17 @@
 #include <vector>
 #include <optional>
 
-class Device final:
-    public Common::Resources::IResource<Device>
+class VulkanDevice final:
+    public Common::Resources::IResource<VulkanDevice>
 {
 public:
-    Device(void) : m_pDevice(VK_NULL_HANDLE), 
+    VulkanDevice(void) : m_pDevice(VK_NULL_HANDLE), 
                    m_pPyshicalDev(VK_NULL_HANDLE), 
                    m_gpuProperties({0}), 
                    m_pCommandPool(0), 
                    m_pPresentQueue(VK_NULL_HANDLE),
                    m_pGraphicsQueue(VK_NULL_HANDLE) {};
-    virtual ~Device(void) {};
+    virtual ~VulkanDevice(void) {};
 
     struct FamilyType {
         std::optional<uint32_t> m_uGPFam;
@@ -30,7 +30,7 @@ public:
     inline const VkDevice                   GetDevice         (void) const { return m_pDevice; }
     inline const VkQueue                    GetGfxQueue       (void) const { return m_pPresentQueue; }
     inline const VkQueue                    GetPresentQueue   (void) const { return m_pGraphicsQueue; }
-    inline const Device::FamilyType         GetFamily         (void) const { return m_stFamily; }
+    inline const VulkanDevice::FamilyType         GetFamily         (void) const { return m_stFamily; }
     inline const VkCommandPool              GetCommandPool    (void) const { return m_pCommandPool; }
     inline const VkPhysicalDeviceProperties GetGPUProperties  (void) const { return m_gpuProperties; }
 

@@ -8,8 +8,20 @@
 #include <BaseManager.h>
 #include <fstream>
 #include <Ray.h>
+#include <bitset>
+using namespace std;
 
 int main() {
+    for (size_t i = 0; i < 10; i++)
+    {
+        bitset<5> sample(i);
+        hash<bitset<5> > hash_bitset;
+
+        // Using operator() to get hash value
+        cout << "\nBitset 10101 hash value: "
+            << hash_bitset(i) << ", " << sample << endl;
+    }
+
     std::unique_ptr<RenderApp> app = std::make_unique<RenderApp>("Vulkan - AlGoMa", false, 0, 0, 800, 600);
 
     std::ofstream file;
@@ -62,6 +74,10 @@ int main() {
     f = Reinterprete_Cast<double>(EndianessSwitcher(Reinterprete_Cast<t_IntU64>(f)));
 #pragma endregion
 
+    int *customArray = new int[5];
+
+    cout << "Size: " << std::extent<decltype(&(customArray[0]))>::value << endl;
+
     try {
         app->Run();
     }
@@ -71,6 +87,8 @@ int main() {
     }
 
     app.release();
+
+    delete []customArray;
 
     return EXIT_SUCCESS;
 }

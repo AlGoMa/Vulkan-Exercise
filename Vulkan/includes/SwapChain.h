@@ -2,7 +2,7 @@
 #include <Resource.h>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include "Device.h"
+#include "VulkanDevice.h"
 #include <vector>
 #include "ConstantBuffer.h"
 #include "StorageBuffer.h"

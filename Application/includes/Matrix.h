@@ -67,7 +67,7 @@ namespace App::Math {
 
         /* Camera stuff. */
         static Matrix PerspectiveMatrix  (const float in_fFOV, const float in_fAspectRatio, const float in_fNear, const float in_fFar);
-        static Matrix OrtthographicMatrix(float in_fLPlane, float in_fRPlane, float in_fTopPlane, float in_fBottomPlane, float in_fNear, float in_fFar);
+        static Matrix OrthographicMatrix (float in_fLPlane, float in_fRPlane, float in_fTopPlane, float in_fBottomPlane, float in_fNear, float in_fFar);
         static Matrix LookAtMatrix       (Vector in_vPosition, Vector in_vTarget, Vector in_vUpVector);
 
         __declspec(noinline) const Vector& Vec1(void) const { return m_v1stVector; }

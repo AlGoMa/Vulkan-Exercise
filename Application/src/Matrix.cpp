@@ -106,7 +106,7 @@ App::Math::Matrix App::Math::Matrix::PerspectiveMatrix(const float in_fFOV, cons
     return out_mProjectivMatrix;
 }
 
-App::Math::Matrix App::Math::Matrix::OrtthographicMatrix(float in_fLPlane, float in_fRPlane, float in_fTopPlane,
+App::Math::Matrix App::Math::Matrix::OrthographicMatrix(float in_fLPlane, float in_fRPlane, float in_fTopPlane,
     float in_fBottomPlane, float in_fNear, float in_fFar)
 {
     Matrix out_OrthogaphicMatrix = mIdentity;

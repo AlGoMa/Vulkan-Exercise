@@ -1,9 +1,9 @@
-#include "Entity.h"
+#include "RenderEntity.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <unordered_map>
 
-bool Entity::AddBuffer(VulkanBuffer* in_pBuffer)
+bool RenderEntity::AddBuffer(VulkanBuffer* in_pBuffer)
 { 
     bool bResult = false;
 
@@ -24,7 +24,7 @@ bool Entity::AddBuffer(VulkanBuffer* in_pBuffer)
     return bResult;
 }
 
-bool Entity::RemoveBuffer(VulkanBuffer::BufferType in_eBuffer)
+bool RenderEntity::RemoveBuffer(VulkanBuffer::BufferType in_eBuffer)
 {
     bool bResult = false;
 
@@ -40,7 +40,7 @@ bool Entity::RemoveBuffer(VulkanBuffer::BufferType in_eBuffer)
     return bResult;
 }
 
-bool Entity::LoadObj(const std::string in_strObject)
+bool RenderEntity::LoadObj(const std::string in_strObject)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -97,7 +97,7 @@ bool Entity::LoadObj(const std::string in_strObject)
     return true;
 }
 
-void Entity::Destroy(void)
+void RenderEntity::Destroy(void)
 {
     __super::Destroy();
 

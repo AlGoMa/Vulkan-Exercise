@@ -174,7 +174,7 @@ VkResult VulkanManager::CreateSemaphores(void)
     return static_cast<VkResult>( !std::all_of(vResult.cbegin(), vResult.cend (), [](const auto res) { return res == VK_SUCCESS; }));
 }
 
-VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const Entity* in_pToDraw, bool in_bResize)
+VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const RenderEntity* in_pToDraw, bool in_bResize)
 {
     vkWaitForFences(m_Device.GetDevice(), 1, &m_vInFlightFences[m_unFrame], VK_TRUE, UINT64_MAX);
 
@@ -189,7 +189,7 @@ VkResult VulkanManager::vkDraw(const void* in_pvWindowInstance, const Entity* in
         
         m_SwapChain.GetCB()->UpdateBuffer(unImageIndex);
         
-        m_Pipeline.UpdateCommandBuffers(const_cast<Entity*>(in_pToDraw), unImageIndex);
+        m_Pipeline.UpdateCommandBuffers(const_cast<RenderEntity*>(in_pToDraw), unImageIndex);
 
         m_vImagesInFlight[unImageIndex] = m_vInFlightFences[m_unFrame];
 

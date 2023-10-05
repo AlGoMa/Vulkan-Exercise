@@ -52,7 +52,7 @@ float App::Math::Vector::Magnitude(const Vector& in_vVector)
 float App::Math::Vector::Dot(const Vector& in_vA, const Vector& in_vB)
 {
     float out_fResult = 0.0f;
-    __m128 vRes = _mm_mul_ps(_mm_load_ps(in_vA.a), _mm_load_ps(in_vB.a));
+    __m128 vRes = _mm_mul_ps(_mm_load_ps(in_vA.xyzw), _mm_load_ps(in_vB.xyzw));
     vRes = _mm_hadd_ps(vRes, vRes);
     vRes = _mm_hadd_ps(vRes, vRes);
     _mm_store_ss(&out_fResult, vRes);
@@ -105,7 +105,7 @@ App::Math::Vector App::Math::operator /(const Vector& in_vA, const Vector& in_vB
 
 bool App::Math::operator == (const Vector& in_vA, const Vector& in_vB)
 {
-    return memcmp(in_vA.a, in_vB.a, 4) == 0;
+    return memcmp(in_vA.xyzw, in_vB.xyzw, 4) == 0;
 }
 
 App::Math::Vector App::Math::operator - (const Vector& in_vA, const Vector& in_vB)

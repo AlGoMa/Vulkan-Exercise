@@ -1,10 +1,11 @@
-#include <Pipeline.h>
+#include <VulkanPipeline.h>
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <VulkanManager.h>
 #include <math.h>
+#include <RenderEntity.h>
 
-void Pipeline::CreateShader(const std::string in_strPathToFile, const char* in_strEntryPoint, ShaderType in_eType)
+void VukanPipeline::CreateShader(const std::string in_strPathToFile, const char* in_strEntryPoint, ShaderType in_eType)
 {
     VkPipelineShaderStageCreateInfo stShaderStageInfo{};
 
@@ -40,7 +41,7 @@ void Pipeline::CreateShader(const std::string in_strPathToFile, const char* in_s
     m_vShaderRes.push_back(stShaderStageInfo);
 }
 
-VkResult Pipeline::CreatePipelineLayout(void)
+VkResult VukanPipeline::CreatePipelineLayout(void)
 {
     VkResult eResult = VK_SUCCESS;
 
@@ -57,7 +58,7 @@ VkResult Pipeline::CreatePipelineLayout(void)
     return eResult;
 }
 
-VkResult Pipeline::CreateComputePipelineLayout(void)
+VkResult VukanPipeline::CreateComputePipelineLayout(void)
 {
     VkResult eResult = VK_SUCCESS;
 
@@ -74,7 +75,7 @@ VkResult Pipeline::CreateComputePipelineLayout(void)
     return eResult;
 }
 
-VkResult Pipeline::CreateGraphicsPipeline(void) 
+VkResult VukanPipeline::CreateGraphicsPipeline(void) 
 {
     VkResult eResult = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -174,7 +175,7 @@ VkResult Pipeline::CreateGraphicsPipeline(void)
     return eResult;
 }
 
-VkResult Pipeline::CreateComputePipeline(void)
+VkResult VukanPipeline::CreateComputePipeline(void)
 {
     VkResult eResult = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -191,7 +192,7 @@ VkResult Pipeline::CreateComputePipeline(void)
     return eResult;
 }
 
-VkResult Pipeline::CreateRenderPass(void)
+VkResult VukanPipeline::CreateRenderPass(void)
 {
     VkAttachmentDescription stColorAttachment{};
     stColorAttachment.format = VulkanInstance->GetSC()->GetFormats();
@@ -232,7 +233,7 @@ VkResult Pipeline::CreateRenderPass(void)
     return vkCreateRenderPass(VulkanInstance->GetDevice()->GetDevice(), &stRenderPassInfo, nullptr, &m_pRenderPass);
 }
 
-VkShaderModule Pipeline::CreateShaderModule(const std::string& in_strFilename, VkStructureType in_unType)
+VkShaderModule VukanPipeline::CreateShaderModule(const std::string& in_strFilename, VkStructureType in_unType)
 {
     std::vector<char> vCode = App::Utilities::Gfx::readFile(in_strFilename);
     VkShaderModuleCreateInfo createInfo{};
@@ -249,7 +250,7 @@ VkShaderModule Pipeline::CreateShaderModule(const std::string& in_strFilename, V
     return shaderModule;
 }
 
-VkResult Pipeline::CreateCommandBuffers(void)
+VkResult VukanPipeline::CreateCommandBuffers(void)
 {
     VkResult eResult = VK_SUCCESS;
 
@@ -269,7 +270,7 @@ VkResult Pipeline::CreateCommandBuffers(void)
     return eResult;
 }
 
-VkResult Pipeline::UpdateCommandBuffers(Entity* in_pEntity, const uint32_t in_unFrame)
+VkResult VukanPipeline::UpdateCommandBuffers(RenderEntity* in_pEntity, const uint32_t in_unFrame)
 {
     VkResult eResult = VK_SUCCESS;
 
@@ -323,7 +324,7 @@ VkResult Pipeline::UpdateCommandBuffers(Entity* in_pEntity, const uint32_t in_un
     return eResult;
 }
 
-VkResult Pipeline::UpdateCSCommandBuffers(const uint32_t in_unFrame)
+VkResult VukanPipeline::UpdateCSCommandBuffers(const uint32_t in_unFrame)
 {
     vkCmdBindPipeline(m_vCmdBuffers[in_unFrame], VK_PIPELINE_BIND_POINT_COMPUTE, m_mPipelines[PipelineType::compute].m_pp);
     
@@ -338,7 +339,7 @@ VkResult Pipeline::UpdateCSCommandBuffers(const uint32_t in_unFrame)
     return VK_SUCCESS;
 }
 
-void Pipeline::DestroyPipeLine(void)
+void VukanPipeline::DestroyPipeLine(void)
 {
     vkDestroyPipeline(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_pp, nullptr);
     vkDestroyPipelineLayout(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::graphics].m_ppLayout, nullptr);
@@ -346,18 +347,18 @@ void Pipeline::DestroyPipeLine(void)
     vkDestroyRenderPass(VulkanInstance->GetDevice()->GetDevice(), m_pRenderPass, nullptr);
 }
 
-void Pipeline::DestroyComputePipeLine(void)
+void VukanPipeline::DestroyComputePipeLine(void)
 {
     vkDestroyPipeline(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_pp, nullptr);
     vkDestroyPipelineLayout(VulkanInstance->GetDevice()->GetDevice(), m_mPipelines[PipelineType::compute].m_ppLayout, nullptr);
 }
 
-void Pipeline::DestroyBuffers(void)
+void VukanPipeline::DestroyBuffers(void)
 {
     vkFreeCommandBuffers(VulkanInstance->GetDevice()->GetDevice(), VulkanInstance->GetDevice()->GetCommandPool(), static_cast<uint32_t>(m_vCmdBuffers.size()), m_vCmdBuffers.data());
 }
 
-void Pipeline::Destroy(void)
+void VukanPipeline::Destroy(void)
 {
     for (auto& desc : m_vShaderRes)
         vkDestroyShaderModule(VulkanInstance->GetDevice()->GetDevice(), desc.module, nullptr);

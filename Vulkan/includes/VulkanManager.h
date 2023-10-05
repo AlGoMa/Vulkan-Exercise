@@ -3,11 +3,11 @@
 #include "vulkan/vulkan.h"
 #include "Singleton.h"
 #include "SwapChain.h"
-#include "Device.h"
-#include "Pipeline.h"
-#include "Entity.h"
-
+#include "VulkanDevice.h"
+#include "VulkanPipeline.h"
 #define VulkanInstance VulkanManager::GetInstance()
+
+class RenderEntity;
 
 #ifdef NDEBUG
 constexpr bool g_bEnableValidationLayers = false;
@@ -15,28 +15,32 @@ constexpr bool g_bEnableValidationLayers = false;
 constexpr bool g_bEnableValidationLayers = true;
 #endif
 
-class VulkanManager :
+class VulkanManager final :
     public App::SingletonPattern::Singleton<VulkanManager>
 {
 public:
-    VulkanManager(void) : m_pVulkanApp(nullptr),
-                          m_pDebugMessenger(VK_NULL_HANDLE),
-                          m_unFrame(0U)
+    VulkanManager(void) : m_unFrame(0U),
+                          m_pVulkanApp(nullptr),
+                          m_pDebugMessenger(VK_NULL_HANDLE)
     {}
     virtual ~VulkanManager(void) = default;
-
-public:
+    
     VkResult vkCreateVulkanInstance(const char* in_pszAppName, const void* in_pvWindowInstance);
-    VkResult vkDraw(const void* in_pvWindowInstance, const Entity* in_pToDraw, bool in_bResize = false);
+    VkResult vkDraw(const void* in_pvWindowInstance, const RenderEntity* in_pToDraw, bool in_bResize = false);
     void     vDestroy(void);
 
-    inline const VkInstance   GetApp      (void)                    const { return m_pVulkanApp; }
-    inline       SwapChain*   GetSC       (void)                          { return &m_SwapChain; }
-    inline       Device*      GetDevice   (void)                          { return &m_Device; }
-    inline       Pipeline*    GetPipeline (void)                          { return &m_Pipeline; }
-    inline void               StopDevice  (void)                          { (void)vkDeviceWaitIdle(m_Device.GetDevice()); }
+    inline const VkInstance   GetApp      (void) const { return m_pVulkanApp; }
+    inline       SwapChain*   GetSC       (void)       { return &m_SwapChain; }
+    inline       VulkanDevice*      GetDevice   (void)       { return &m_Device; }
+    inline       VukanPipeline*    GetPipeline (void)       { return &m_Pipeline; }
+    inline void               StopDevice  (void) const { (void)vkDeviceWaitIdle(m_Device.GetDevice()); }
     
 private:
+    /**
+     * \brief 
+     * \param in_pAllocator 
+     * \return 
+     */
     VkResult CreateDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator);
 
     VkResult DestroyDebugUtilsMsn(const VkAllocationCallbacks* in_pAllocator);
@@ -57,8 +61,8 @@ private:
     std::vector<VkFence>               m_vInFlightFences;
     std::vector<VkFence>               m_vImagesInFlight;
     SwapChain                          m_SwapChain;
-    Device                             m_Device;
-    Pipeline                           m_Pipeline;
+    VulkanDevice                             m_Device;
+    VukanPipeline                           m_Pipeline;
     const std::vector<const char*>     m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
     const std::vector<const char*>     m_vDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
     VkDebugUtilsMessengerCreateInfoEXT m_sCreateInfo{

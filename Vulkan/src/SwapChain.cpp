@@ -38,7 +38,7 @@ VkResult SwapChain::CreateSwapChain(const void* in_Window) {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    Device::FamilyType cachedFam = VulkanInstance->GetDevice()->GetFamily();
+    VulkanDevice::FamilyType cachedFam = VulkanInstance->GetDevice()->GetFamily();
 
     if (cachedFam.m_uGPFam != cachedFam.m_uPntFam) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;

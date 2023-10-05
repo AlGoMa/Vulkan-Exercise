@@ -21,7 +21,6 @@ namespace App::Math {
                                        r = x, g = y, b = z, a = w,
                                        i = x, j = y, k = z, t = w };
 
-    private:
         union
         {
             struct { float X, Y, Z, W; };
@@ -30,7 +29,9 @@ namespace App::Math {
 
             struct { float I, J, K, T; };
 
-            float a[4];
+            float xyzw[4];
+            float rgba[4];
+            float ijkt[4];
         };
 
     public:
@@ -55,17 +56,21 @@ namespace App::Math {
         float          Dot           (const Vector& in_vB);
 
         /* Operators oveloading */
-        Vector& operator *=(const float in_fScalar) { _mm_store_ps(a, _mm_mul_ps(_mm_load_ps(a), _mm_set_ps1(in_fScalar))); return *this; }
-        Vector& operator +=(const float in_fScalar) { _mm_store_ps(a, _mm_add_ps(_mm_load_ps(a), _mm_set_ps1(in_fScalar))); return *this; }
-        Vector& operator -=(const float in_fScalar) { _mm_store_ps(a, _mm_sub_ps(_mm_load_ps(a), _mm_set_ps1(in_fScalar))); return *this; }
-        Vector& operator /=(const float in_fScalar) { _mm_store_ps(a, _mm_div_ps(_mm_load_ps(a), _mm_set_ps1(in_fScalar))); return *this; }
-        Vector& operator /=(const Vector& in_vB)    { _mm_store_ps(a, _mm_div_ps(_mm_load_ps(a), _mm_load_ps(in_vB.a))); return *this; }
-        Vector& operator *=(const Vector& in_vB)    { _mm_store_ps(a, _mm_mul_ps(_mm_load_ps(a), _mm_load_ps(in_vB.a))); return *this; }
-        Vector& operator +=(const Vector& in_vB)    { _mm_store_ps(a, _mm_add_ps(_mm_load_ps(a), _mm_load_ps(in_vB.a))); return *this; }
-        Vector& operator -=(const Vector& in_vB)    { _mm_store_ps(a, _mm_sub_ps(_mm_load_ps(a), _mm_load_ps(in_vB.a))); return *this; }
+        Vector& operator *=(const float in_fScalar) { _mm_store_ps(xyzw, _mm_mul_ps(_mm_load_ps(xyzw), _mm_set_ps1(in_fScalar))); return *this; }
+        Vector& operator +=(const float in_fScalar) { _mm_store_ps(xyzw, _mm_add_ps(_mm_load_ps(xyzw), _mm_set_ps1(in_fScalar))); return *this; }
+        Vector& operator -=(const float in_fScalar) { _mm_store_ps(xyzw, _mm_sub_ps(_mm_load_ps(xyzw), _mm_set_ps1(in_fScalar))); return *this; }
+        Vector& operator /=(const float in_fScalar) { _mm_store_ps(xyzw, _mm_div_ps(_mm_load_ps(xyzw), _mm_set_ps1(in_fScalar))); return *this; }
+        Vector& operator /=(const Vector& in_vB)    { _mm_store_ps(xyzw, _mm_div_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB.xyzw))); return *this; }
+        Vector& operator *=(const Vector& in_vB)    { _mm_store_ps(xyzw, _mm_mul_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB.xyzw))); return *this; }
+        Vector& operator +=(const Vector& in_vB)    { _mm_store_ps(xyzw, _mm_add_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB.xyzw))); return *this; }
+        Vector& operator -=(const Vector& in_vB)    { _mm_store_ps(xyzw, _mm_sub_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB.xyzw))); return *this; }
+        Vector& operator /=(const float in_vB[4])   { _mm_store_ps(xyzw, _mm_div_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB))); return *this; }
+        Vector& operator *=(const float in_vB[4])   { _mm_store_ps(xyzw, _mm_mul_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB))); return *this; }
+        Vector& operator +=(const float in_vB[4])   { _mm_store_ps(xyzw, _mm_add_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB))); return *this; }
+        Vector& operator -=(const float in_vB[4])   { _mm_store_ps(xyzw, _mm_sub_ps(_mm_load_ps(xyzw), _mm_load_ps(in_vB))); return *this; }
 
         template<Indexable type>
-        inline float& operator [](const type in_nIndex) noexcept { return a[static_cast<t_IntU8>(in_nIndex)]; }
+        inline float& operator [](const type in_nIndex) noexcept { return xyzw[static_cast<t_IntU8>(in_nIndex)]; }
 
         __declspec(noinline) const float& x(void) const { return X; }
         __declspec(noinline) const float& y(void) const { return Y; }

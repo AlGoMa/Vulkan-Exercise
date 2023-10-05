@@ -9,10 +9,10 @@
 namespace App::Utilities::Gfx
 {
     class GeometryMesh :
-        public RayTraicing::Hitable<GeometryMesh>
+        public RayTraicing::Hittable<GeometryMesh>
     {
     public:
-        GeometryMesh(const Vector in_vPosition = Vector::Zero()) : m_vPosition(in_vPosition) {};
+        GeometryMesh(const Vector in_vPosition = Vector::Zero()) : m_vPosition(in_vPosition), m_unMeshLOD(0) {};
         virtual ~GeometryMesh(void) {};
 
     public:
@@ -27,10 +27,10 @@ namespace App::Utilities::Gfx
         virtual bool           LoadObj        (const std::string in_strFile);
         virtual void           BuildBasisMesh (GeometryMesh::MeshesType in_eMesh,
                                                Vector in_vPosition = Vector(),
-                                               Vector in_vSize = Vector(1.0f, 1.0f, 1.0f),
-                                               Vector in_vSolidColor = Vector(1.0f, 1.0f, 1.0f));
+                                               Vector in_vSize = Vector(1.f, 1.f, 1.f),
+                                               Vector in_vSolidColor = Vector(1.f, 1.f, 1.f));
 
-        virtual const   stHitRecord Hit           (const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const;
+        virtual const   stHitRecord Hit       (const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const;
 
         inline auto     GetVertex(void) const { return m_aVertexInfo; }
         inline auto     GetIndex (void) const { return m_aIndexlist; }

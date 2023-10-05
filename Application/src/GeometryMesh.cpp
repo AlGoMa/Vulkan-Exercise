@@ -200,7 +200,7 @@ bool GeometryMesh::LoadObj(std::string in_pszFile)
     return true;
 }
 
-const App::Math::RayTraicing::Hitable<GeometryMesh>::stHitRecord GeometryMesh::Hit(const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const
+const App::Math::RayTraicing::Hittable<GeometryMesh>::stHitRecord GeometryMesh::Hit(const RayTraicing::Ray& in_rRay, const float in_fMin, const float in_fMax) const
 {
     stHitRecord out_stHitInfo {0};
     Vector vOriginCtr = (in_rRay.Origin() - m_vPosition);

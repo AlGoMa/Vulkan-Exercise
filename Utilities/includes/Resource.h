@@ -7,18 +7,26 @@
 
 namespace Common::Resources
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="in_pszName"></param>
+    /// <returns></returns>
     static std::string ClassName(const char* in_pszName)
     {
         std::smatch out_matches;
         std::string strInput(in_pszName);
         std::regex_search(strInput, out_matches, std::regex("(?!.*::)(?!=[\\s]?)([\\w]+)((?=\\<?)|(?=\\>))"));
 
-        return out_matches[1];
+        return out_matches[1] ;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     struct stKey
     {
-        t_IntU32     m_ulHashID = 0;
+        t_IntU64     m_ulHashID = 0;
         std::string  m_strRscName;
 
         bool operator==(const stKey& in_refOther) const
@@ -33,7 +41,7 @@ namespace Common::Resources
     template<>
     struct Hashable<stKey> : std::true_type
     {
-        std::size_t operator()(const stKey& in_rKey) const
+        t_IntU64 operator()(const stKey& in_rKey) const
         {
             return in_rKey.m_ulHashID;
         }
@@ -48,6 +56,10 @@ namespace Common::Resources
         bool operator ==(const IComponent& in_other) const { return false; }
     };
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TClass"></typeparam>
     template <typename TClass>
     class IResource
     {
